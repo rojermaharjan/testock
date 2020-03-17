@@ -7,7 +7,7 @@ class AnimatedTypedText extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return QuestionTextState("The Earth is approximately how many miles away from the Sun?");
+    return QuestionTextState("I was trying to add a button to this page that will (play or pause) the waves animation in the background. code link?");
   }
 }
 
@@ -42,7 +42,7 @@ class QuestionTextState extends State<AnimatedTypedText>
         builder: (context, child) =>
             Text(
                     _getAnimatedStringValue(),
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.black ),
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black ),
                     textAlign: TextAlign.center,
                   ),
 

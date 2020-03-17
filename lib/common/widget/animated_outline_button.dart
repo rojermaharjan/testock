@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
-import 'package:testockmbl/common/widget/CustomOutlineButtonWidget.dart';
+import 'package:testockmbl/common/widget/custom_outline_button_widget.dart';
 
 class AnimatedOutlineButton extends StatefulWidget {
+
+  const AnimatedOutlineButton({Key key}) :super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -16,9 +19,7 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
 
   Animation<int> _animation;
 
-  bool  _shouldSopAnimation=false ;
-
-  static final int _maxAnimationCount=10;
+  static final int _maxAnimationCount = 5;
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +28,11 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
         builder: (context, child) {
           return FlatButton(
               color:
-                  _animation.value % 2 == 0 ? Colors.transparent : Colors.green,
+              _animation.value % 2 == 0 ? Colors.transparent : Colors.red
+                  .shade900,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-                  side: BorderSide(color: Colors.grey)
+                  borderRadius: BorderRadius.circular(30),
+                  side: BorderSide(color: _controller.isAnimating?Colors.red.shade900:Colors.grey.shade200)
               ),
               onPressed: _startAnimation,
               child: Text(
@@ -38,7 +40,8 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
                 style: TextStyle(
                     fontFamily: 'Lalezar',
                     fontWeight: FontWeight.w400,
-                    color:  _animation.value % 2 == 0 ? Colors.black : Colors.white),
+                    color: _animation.value % 2 == 0 ? Colors.black : Colors
+                        .white),
               ));
         });
   }
@@ -46,20 +49,20 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
   @override
   void initState() {
     _controller =
-        AnimationController(duration: Duration(milliseconds: 1800), vsync: this);
+        AnimationController(
+            duration: Duration(milliseconds: 900), vsync: this);
     _controller.drive(CurveTween(curve: Curves.bounceOut));
-    _animation = IntTween(begin: 0, end: _maxAnimationCount).animate(_controller)..addListener(() {
-      if(_animation.value==_maxAnimationCount)
-          _shouldSopAnimation=true;
-      if (_shouldSopAnimation ) {
-        _controller.reset();
-        _shouldSopAnimation = false;
+    _animation =
+    IntTween(begin: 0, end: _maxAnimationCount).animate(_controller)
+      ..addListener(() {
+      if (_animation.value ==_maxAnimationCount)
+        _controller.stop();
+    }
 
-      }
-    });
-  }
 
-  void _startAnimation() {
-    _controller.forward(from: 0);
-  }
+  );
 }
+
+void _startAnimation() {
+  _controller.forward(from: 0);
+}}
