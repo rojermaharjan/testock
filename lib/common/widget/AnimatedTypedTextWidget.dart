@@ -3,7 +3,7 @@ import 'package:flutter/animation.dart';
 import 'dart:ui';
 
 
-class AnimatedTypedTextWidget extends StatefulWidget {
+class AnimatedTypedText extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -11,7 +11,7 @@ class AnimatedTypedTextWidget extends StatefulWidget {
   }
 }
 
-class QuestionTextState extends State<AnimatedTypedTextWidget>
+class QuestionTextState extends State<AnimatedTypedText>
     with SingleTickerProviderStateMixin {
   String _question;
 

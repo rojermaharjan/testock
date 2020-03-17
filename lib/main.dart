@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 // import 'package:testockmbl/anim1.dart';
 import 'package:testockmbl/anim2.dart';
+import 'package:testockmbl/common/widget/AnimatedOutlineButtonWidget.dart';
 import 'package:testockmbl/common/widget/AnimatedTypedTextWidget.dart';
 
 // void main() => runApp(MyApp());
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
             child: Center(
           child: Padding(
 
-              child:AnimatedTypedTextWidget(),
+              child:AnimatedOutlineButton(),
               padding: EdgeInsets.all(10),
           )
           )
