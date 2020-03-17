@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 
+// import 'package:testockmbl/anim1.dart';
+import 'package:testockmbl/anim2.dart';
+import 'package:testockmbl/common/widget/AnimatedTypedTextWidget.dart';
+
+// void main() => runApp(MyApp());
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
+  final List<QuestionDTO> itemList =
+      List<QuestionDTO>.generate(10000, (i) => new QuestionDTO("Question $i."));
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Testock',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -20,7 +29,17 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: Scaffold(
+        body: Container(
+            child: Center(
+          child: Padding(
+
+              child:AnimatedTypedTextWidget(),
+              padding: EdgeInsets.all(10),
+          )
+          )
+        ),
+      ),
     );
   }
 }
@@ -96,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headline,
             ),
           ],
         ),
@@ -107,5 +126,15 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+}
+
+class QuestionDTO {
+  String question;
+  List<String> answers;
+
+  QuestionDTO(String question) {
+    this.question = question;
+    answers = List<String>.generate(4, (i) => "Option($i)");
   }
 }
