@@ -3,8 +3,7 @@ import 'package:flutter/animation.dart';
 import 'package:testockmbl/common/widget/custom_outline_button_widget.dart';
 
 class AnimatedOutlineButton extends StatefulWidget {
-
-  const AnimatedOutlineButton({Key key}) :super(key: key);
+   AnimatedOutlineButton({Key key}) :super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -28,11 +27,11 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
         builder: (context, child) {
           return FlatButton(
               color:
-              _animation.value % 2 == 0 ? Colors.transparent : Colors.red
-                  .shade900,
+              _animation.value % 2 == 0 ? Colors.transparent : Colors.green.shade700
+                 ,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
-                  side: BorderSide(color: _controller.isAnimating?Colors.red.shade900:Colors.grey.shade200)
+                  side: BorderSide(color: _controller.isAnimating?Colors.green.shade700:Colors.grey.shade200)
               ),
               onPressed: _startAnimation,
               child: Text(
@@ -50,8 +49,8 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
   void initState() {
     _controller =
         AnimationController(
-            duration: Duration(milliseconds: 900), vsync: this);
-    _controller.drive(CurveTween(curve: Curves.bounceOut));
+            duration: Duration(milliseconds: 800), vsync: this);
+    _controller.drive(CurveTween(curve: Curves.decelerate));
     _animation =
     IntTween(begin: 0, end: _maxAnimationCount).animate(_controller)
       ..addListener(() {

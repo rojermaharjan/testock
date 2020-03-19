@@ -7,7 +7,7 @@ class AnimatedTypedText extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return QuestionTextState("I was trying to add a button to this page that will (play or pause) the waves animation in the background. code link?");
+    return QuestionTextState("What is a quote that inspires you?");
   }
 }
 
@@ -24,7 +24,7 @@ class QuestionTextState extends State<AnimatedTypedText>
   @override
   void initState() {
     super.initState();
-    final int time=_question.length~/0.05*window.devicePixelRatio.toInt();
+    final int time=_question.length~/0.1;
     controller =
         AnimationController(duration:  Duration(milliseconds: time), vsync: this);
     controller.drive(
