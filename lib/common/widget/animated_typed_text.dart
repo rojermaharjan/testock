@@ -24,7 +24,7 @@ class QuestionTextState extends State<AnimatedTypedText>
   @override
   void initState() {
     super.initState();
-    final int time=_question.length~/0.1;
+    final int time=_question.length~/0.03;
     controller =
         AnimationController(duration:  Duration(milliseconds: time), vsync: this);
     controller.drive(
