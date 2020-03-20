@@ -2,34 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
 import 'dart:ui';
 
+import 'package:get_it/get_it.dart';
+import 'package:testockmbl/features/test/model/question_models.dart';
+import 'package:testockmbl/features/test/presenter/test_screen_presenter.dart';
+
 
 class AnimatedTypedText extends StatefulWidget {
+  AnimatedTypedText({Key key}  ) :super(key: key);
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return QuestionTextState("What is a quote that inspires you?");
+    return QuestionTextState();
   }
 }
 
 class QuestionTextState extends State<AnimatedTypedText>
     with SingleTickerProviderStateMixin {
-  String _question;
+
+  Question _questionModel;
 
   AnimationController controller;
 
   Animation<int> animation;
 
-  QuestionTextState(this._question);
+  QuestionTextState();
 
   @override
   void initState() {
     super.initState();
-    final int time=_question.length~/0.03;
+    _questionModel =  GetIt.I<TestScreenPresenter>().getCurrentQuestion();
+    final int time=_questionModel.question.length~/0.03;
     controller =
         AnimationController(duration:  Duration(milliseconds: time), vsync: this);
     controller.drive(
         CurveTween(curve: Curves.easeInOutCubic));
-    animation = IntTween(begin: 0 , end:_question.length).animate(controller);
+    animation = IntTween(begin: 0 , end:_questionModel.question.length).animate(controller);
     controller.forward();
 
 
@@ -51,6 +58,6 @@ class QuestionTextState extends State<AnimatedTypedText>
 
   String _getAnimatedStringValue() {
 
-    return _question.substring(0,animation.value);
+    return _questionModel.question.substring(0,animation.value);
   }
 }
