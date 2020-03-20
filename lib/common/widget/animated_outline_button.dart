@@ -117,7 +117,7 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
       this._currentAnswer = _currentQuestion.answerOptions[_position];
       _presenter.onAnswerSelected(_position);
       new Future.delayed(
-          const Duration(milliseconds: 800), _presenter.queryNextQuestion);
+          const Duration(milliseconds: 1100), _presenter.queryNextQuestion);
     }
   }
 
