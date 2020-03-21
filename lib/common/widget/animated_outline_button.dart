@@ -99,7 +99,6 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
     _presenter.answerEventStream.listen((event) {
       if (event == AnswerEvent.WRONG_ANSWER_SELECTED) {
         this._buttonBorderColor = this._buttonAnimatingColor;
-
         if (this._currentAnswer.isCorrect &&
             !this._currentAnswer.isSelectedByUser)
           _controller.forward(from: 0);
@@ -108,8 +107,10 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
       }
 
       if (event == AnswerEvent.RIGHT_ANSWER_SELECTED) {
-        if (this._currentAnswer.isCorrect)
+        if (this._currentAnswer.isCorrect) {
+          this._buttonBorderColor = this._buttonAnimatingColor;
           _controller.forward(from: _maxAnimationCount.toDouble());
+        }
       }
     });
   }
