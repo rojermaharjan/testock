@@ -37,11 +37,10 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
 
   Question _currentQuestion;
 
-  bool _disableClick;
+  Color _buttonBorderColor;
 
   _AnimatedOutlineButtonState(int position) {
     this._position = position;
-    this._disableClick=false;
   }
 
   @override
@@ -49,26 +48,28 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
     return AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
-          return FlatButton(
-              color: _animation.value % 2 == 0
-                  ? Colors.transparent
-                  : _buttonAnimatingColor,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  side: BorderSide(
-                      color: _controller.isAnimating
-                          ? _buttonAnimatingColor
-                          : Colors.grey.shade200)),
-              onPressed: onAnswerSelected,
-              child: Text(
-                _currentAnswer.answer,
-                style: TextStyle(
-                    fontFamily: 'Lalezar',
-                    fontWeight: FontWeight.w400,
-                    color: _animation.value % 2 == 0
-                        ? Colors.black
-                        : Colors.white),
-              ));
+          return SizedBox(
+              width: MediaQuery.of(context).size.width * 0.65,
+              child: FlatButton(
+                  color: _animation.value % 2 == 0
+                      ? Colors.transparent
+                      : _buttonAnimatingColor,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      side: BorderSide(color: _buttonBorderColor)),
+                  onPressed: onAnswerSelected,
+                  child: Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: Text(
+                        _currentAnswer.answer,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontFamily: 'Lalezar',
+                            fontWeight: FontWeight.w400,
+                            color: _animation.value % 2 == 0
+                                ? Colors.black
+                                : Colors.white),
+                      ))));
         });
   }
 
@@ -76,6 +77,8 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
   void initState() {
     this._presenter = GetIt.I<TestScreenPresenter>();
     getLatestState();
+
+    _buttonBorderColor = Colors.grey.shade400;
 
     if (_currentAnswer.isCorrect)
       _buttonAnimatingColor = Colors.green.shade700;
@@ -94,31 +97,33 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
           });
 
     _presenter.answerEventStream.listen((event) {
-
       if (event == AnswerEvent.WRONG_ANSWER_SELECTED) {
-        if(this._currentAnswer.isCorrect&&!this._currentAnswer.isSelectedByUser)
+        this._buttonBorderColor = this._buttonAnimatingColor;
+
+        if (this._currentAnswer.isCorrect &&
+            !this._currentAnswer.isSelectedByUser)
           _controller.forward(from: 0);
-        else if(this._currentAnswer.isSelectedByUser)
+        else if (this._currentAnswer.isSelectedByUser)
           _controller.forward(from: _maxAnimationCount.toDouble());
       }
 
       if (event == AnswerEvent.RIGHT_ANSWER_SELECTED) {
-        if(this._currentAnswer.isCorrect)
-        _controller.forward(from: _maxAnimationCount.toDouble());
+        if (this._currentAnswer.isCorrect)
+          _controller.forward(from: _maxAnimationCount.toDouble());
       }
-
-
     });
   }
 
   void onAnswerSelected() {
-    if(!this._disableClick) {
-      this._disableClick = true;
-      this._currentAnswer = _currentQuestion.answerOptions[_position];
-      _presenter.onAnswerSelected(_position);
-      new Future.delayed(
-          const Duration(milliseconds: 1100), _presenter.queryNextQuestion);
-    }
+    this._currentAnswer = _currentQuestion.answerOptions[_position];
+    _presenter.onAnswerSelected(_position);
+    int duration=500;
+    if (!this._currentQuestion.isQuestionOpinion)
+     duration=1100;
+
+
+    new Future.delayed(
+         Duration(milliseconds: duration), _presenter.queryNextQuestion);
   }
 
   void getLatestState() {

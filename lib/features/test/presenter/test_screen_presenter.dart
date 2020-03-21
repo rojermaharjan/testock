@@ -38,6 +38,11 @@ class TestScreenPresenter {
   }
 
   restartTest() {
+    _questionList.forEach((element) {
+      element.answerOptions.forEach((element) {
+        element.isSelectedByUser=false;
+      });
+    });
     _questionIndex = -1;
     _questionEventBloc.updateState(QuestionEvent.END_OF_QUESTION);
   }
