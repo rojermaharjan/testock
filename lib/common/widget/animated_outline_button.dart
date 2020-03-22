@@ -48,29 +48,32 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
     return AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
-          return SizedBox(
-              width: MediaQuery.of(context).size.width * 0.65,
-              child: FlatButton(
-                  color: _animation.value % 2 == 0
-                      ? Colors.transparent
-                      : _buttonAnimatingColor,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      side: BorderSide(color: _buttonBorderColor)),
-                  onPressed: onAnswerSelected,
-                  child: Padding(
-                      padding: EdgeInsets.all(10.0),
-                      child: Text(
-                        _currentAnswer.answer,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 17,
-                            fontFamily: 'Lalezar',
-                            fontWeight: FontWeight.w400,
-                            color: _animation.value % 2 == 0
-                                ? Colors.grey.shade700
-                                : Colors.white),
-                      ))));
+          return Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.65,
+                child: FlatButton(
+                    color: _animation.value % 2 == 0
+                        ? Colors.transparent
+                        : _buttonAnimatingColor,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        side: BorderSide(color: _buttonBorderColor)),
+                    onPressed: onAnswerSelected,
+                    child: Padding(
+                        padding: EdgeInsets.all(14.0),
+                        child: Text(
+                          _currentAnswer.answer,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 17,
+                              fontFamily: 'Lalezar',
+                              fontWeight: FontWeight.w400,
+                              color: _animation.value % 2 == 0
+                                  ? Colors.grey.shade700
+                                  : Colors.white),
+                        )))),
+          );
         });
   }
 
