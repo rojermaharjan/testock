@@ -25,16 +25,27 @@ class _TestScreenState extends State<StatefulWidget> {
         );
         break;
       case QuestionEvent.NEW_QUESTION_ARRIVED:
-        return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              AnimatedTypedText(key: UniqueKey()),
-              AnimatedOutlineButton(key: UniqueKey(),position: 0),
-              AnimatedOutlineButton(key: UniqueKey(),position: 1),
-              AnimatedOutlineButton(key: UniqueKey(),position: 2),
-              AnimatedOutlineButton(key: UniqueKey(),position: 3),
-            ]);
+        return Stack(
+          children: <Widget>[
+            Positioned(
+                child: Align(
+                    alignment: FractionalOffset(.5,.25),
+                    child: AnimatedTypedText(key: UniqueKey()))),
+            Positioned(
+                child: Align(
+                    alignment: FractionalOffset(.5,.8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        AnimatedOutlineButton(key: UniqueKey(), position: 0),
+                        AnimatedOutlineButton(key: UniqueKey(), position: 1),
+                        AnimatedOutlineButton(key: UniqueKey(), position: 2),
+                        AnimatedOutlineButton(key: UniqueKey(), position: 3),
+                      ],
+                    )))
+          ],
+        );
         break;
 
       case QuestionEvent.END_OF_QUESTION:

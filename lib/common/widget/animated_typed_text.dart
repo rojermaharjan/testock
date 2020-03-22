@@ -21,7 +21,7 @@ class QuestionTextState extends State<AnimatedTypedText>
 
   Question _questionModel;
 
-  AnimationController controller;
+  AnimationController _controller;
 
   Animation<int> animation;
 
@@ -32,12 +32,12 @@ class QuestionTextState extends State<AnimatedTypedText>
     super.initState();
     _questionModel =  GetIt.I<TestScreenPresenter>().getCurrentQuestion();
     final int time=_questionModel.question.length~/0.03;
-    controller =
+    _controller =
         AnimationController(duration:  Duration(milliseconds: time), vsync: this);
-    controller.drive(
+    _controller.drive(
         CurveTween(curve: Curves.easeInOutCubic));
-    animation = IntTween(begin: 0 , end:_questionModel.question.length).animate(controller);
-    controller.forward();
+    animation = IntTween(begin: 0 , end:_questionModel.question.length).animate(_controller);
+    _controller.forward();
 
 
   }
@@ -45,7 +45,7 @@ class QuestionTextState extends State<AnimatedTypedText>
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-        animation: controller,
+        animation: _controller,
         builder: (context, child) =>
             Text(
                     _getAnimatedStringValue(),
@@ -54,6 +54,13 @@ class QuestionTextState extends State<AnimatedTypedText>
                   ),
 
     );
+  }
+
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   String _getAnimatedStringValue() {

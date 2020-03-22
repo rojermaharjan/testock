@@ -134,7 +134,7 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 }
