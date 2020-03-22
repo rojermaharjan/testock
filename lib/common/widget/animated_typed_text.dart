@@ -23,20 +23,26 @@ class QuestionTextState extends State<AnimatedTypedText>
 
   AnimationController _controller;
 
-  Animation<int> animation;
+  Animation<int> _animation;
+
 
   QuestionTextState();
+
+  List<String> _questionWordList;
 
   @override
   void initState() {
     super.initState();
+
     _questionModel =  GetIt.I<TestScreenPresenter>().getCurrentQuestion();
-    final int time=_questionModel.question.length~/0.03;
+
+    _questionWordList=_questionModel.question.split(" ");
+    final int time=_questionWordList.length~/0.0085;
     _controller =
         AnimationController(duration:  Duration(milliseconds: time), vsync: this);
     _controller.drive(
-        CurveTween(curve: Curves.easeInOutCubic));
-    animation = IntTween(begin: 0 , end:_questionModel.question.length).animate(_controller);
+        CurveTween(curve: Curves.easeInOutQuad));
+    _animation = IntTween(begin: 0 , end:_questionWordList.length).animate(_controller);
     _controller.forward();
 
 
@@ -64,7 +70,12 @@ class QuestionTextState extends State<AnimatedTypedText>
   }
 
   String _getAnimatedStringValue() {
-
-    return _questionModel.question.substring(0,animation.value);
+    String _animQuestion="";
+    String trail=" ";
+     for(int i=0;i<_animation.value;i++)
+       {
+         _animQuestion+=_questionWordList[i]+trail;
+       }
+    return _animQuestion;
   }
 }

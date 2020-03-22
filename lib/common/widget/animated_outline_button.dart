@@ -64,10 +64,11 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
                         _currentAnswer.answer,
                         textAlign: TextAlign.center,
                         style: TextStyle(
+                          fontSize: 17,
                             fontFamily: 'Lalezar',
                             fontWeight: FontWeight.w400,
                             color: _animation.value % 2 == 0
-                                ? Colors.black
+                                ? Colors.grey.shade700
                                 : Colors.white),
                       ))));
         });
