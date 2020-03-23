@@ -6,9 +6,9 @@ import 'package:get_it/get_it.dart';
 import 'package:testockmbl/features/test/model/question_models.dart';
 import 'package:testockmbl/features/test/presenter/test_screen_presenter.dart';
 
-
 class AnimatedTypedText extends StatefulWidget {
-  AnimatedTypedText({Key key}  ) :super(key: key);
+  AnimatedTypedText({Key key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -18,7 +18,6 @@ class AnimatedTypedText extends StatefulWidget {
 
 class QuestionTextState extends State<AnimatedTypedText>
     with SingleTickerProviderStateMixin {
-
   Question _questionModel;
 
   AnimationController _controller;
@@ -34,18 +33,17 @@ class QuestionTextState extends State<AnimatedTypedText>
   void initState() {
     super.initState();
 
-    _questionModel =  GetIt.I<TestScreenPresenter>().getCurrentQuestion();
 
-    _questionWordList=_questionModel.question.split(" ");
-    final int time=_questionWordList.length~/0.0085;
-    _controller =
-        AnimationController(duration:  Duration(milliseconds: time), vsync: this);
-    _controller.drive(
-        CurveTween(curve: Curves.easeInOutQuad));
-    _animation = IntTween(begin: 0 , end:_questionWordList.length).animate(_controller);
+    _questionModel = GetIt.I<TestScreenPresenter>().getCurrentQuestion();
+
+    _questionWordList = _questionModel.question.split(" ");
+    final int time = _questionWordList.length ~/ 0.012;
+    _controller = AnimationController(
+        duration: Duration(milliseconds: time), vsync: this);
+    _controller.drive(CurveTween(curve: Curves.easeInOutQuad));
+    _animation =
+        IntTween(begin: 0, end: _questionWordList.length).animate(_controller);
     _controller.forward();
-
-
   }
 
   @override
@@ -53,15 +51,18 @@ class QuestionTextState extends State<AnimatedTypedText>
     return AnimatedBuilder(
         animation: _controller,
         builder: (context, child) =>
-            Text(
-                    _getAnimatedStringValue(),
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black ),
-                    textAlign: TextAlign.center,
-                  ),
-
-    );
+               Opacity(
+                opacity: _animation.value / _questionWordList.length ,
+                child: Text(
+                  _getAnimatedStringValue(),
+                  style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
+                  textAlign: TextAlign.center,
+                ),
+            ));
   }
-
 
   @override
   void dispose() {
@@ -70,12 +71,11 @@ class QuestionTextState extends State<AnimatedTypedText>
   }
 
   String _getAnimatedStringValue() {
-    String _animQuestion="";
-    String trail=" ";
-     for(int i=0;i<_animation.value;i++)
-       {
-         _animQuestion+=_questionWordList[i]+trail;
-       }
+    String _animQuestion = "";
+    String trail = " ";
+    for (int i = 0; i < _animation.value; i++) {
+      _animQuestion += _questionWordList[i] + trail;
+    }
     return _animQuestion;
   }
 }
