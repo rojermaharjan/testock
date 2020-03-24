@@ -27,6 +27,10 @@ class TestScreenPresenter {
     return _questionBloc.getCurrentState();
   }
 
+  String getCurrentQuestionIndex() {
+    return (_questionIndex+1).toString()+"/"+_questionList.length.toString();
+  }
+
   queryNextQuestion() {
     _questionIndex++;
     if (_questionIndex < _questionList.length) {

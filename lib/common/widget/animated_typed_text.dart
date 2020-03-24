@@ -58,7 +58,7 @@ class QuestionTextState extends State<AnimatedTypedText>
                   style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black),
+                      color: Colors.white),
                   textAlign: TextAlign.center,
                 ),
             ));

@@ -70,7 +70,7 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
                               fontFamily: 'Lalezar',
                               fontWeight: FontWeight.w400,
                               color: _animation.value % 2 == 0
-                                  ? Colors.grey.shade700
+                                  ? Colors.grey.shade900
                                   : Colors.white),
                         )))),
           );
@@ -82,7 +82,7 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
     this._presenter = GetIt.I<TestScreenPresenter>();
     getLatestState();
 
-    _buttonBorderColor = Colors.grey.shade400;
+    _buttonBorderColor = Colors.grey.shade100;
 
     if (_currentAnswer.isCorrect)
       _buttonAnimatingColor = Colors.green.shade700;
@@ -138,7 +138,6 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 }
