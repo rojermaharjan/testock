@@ -48,7 +48,17 @@ class TestScreenPresenter {
       });
     });
     _questionIndex = -1;
-    _questionEventBloc.updateState(QuestionEvent.END_OF_QUESTION);
+    _questionEventBloc.updateState(QuestionEvent.PROMPT_FEEDBACK);
+  }
+
+  postFeedback()
+  {
+    new Future.delayed(
+        Duration(milliseconds: 500), (){
+      _questionEventBloc.updateState(QuestionEvent.END_OF_QUESTION);
+
+    });
+
   }
 
   Stream<QuestionEvent> get questionEventStream =>
@@ -69,6 +79,6 @@ class TestScreenPresenter {
   }
 }
 
-enum QuestionEvent { NEW_QUESTION_ARRIVED, LOADING, END_OF_QUESTION }
+enum QuestionEvent { NEW_QUESTION_ARRIVED, LOADING, END_OF_QUESTION,PROMPT_FEEDBACK}
 
 enum AnswerEvent { WRONG_ANSWER_SELECTED, RIGHT_ANSWER_SELECTED, OPINION }

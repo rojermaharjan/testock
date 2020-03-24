@@ -91,3 +91,30 @@ List<Question>  getDummyQuestions()
 
   return questions;
 }
+
+List<Question> getFeedbackQuestions()
+{
+  List<Question> questions=new List();
+
+  questions.add(Question( "This quiz app can help you in preparation of",[
+    AnswerOption("IOE/IOM Entrace","1",true),
+    AnswerOption("CMAT Exam","2",false),
+    AnswerOption("IELTS Exam","2",false),
+    AnswerOption("None of the above","3",false),
+  ]));
+
+  questions.add(Question( "Do you find the app useful?",[
+    AnswerOption("Yes","1",true),
+    AnswerOption("No","2",false),
+    AnswerOption("May be","2",false),
+    AnswerOption("I'm not sure","3",false),
+  ])..isQuestionOpinion=true);
+
+  questions.add(Question( "Have you used any app for entrance/exam preparation?",[
+    AnswerOption("I'm using currently","1",true),
+    AnswerOption("I tried but didn't like it","2",false),
+    AnswerOption("No","2",false),
+    AnswerOption("Yes","3",false),
+  ])..isQuestionOpinion=true);
+
+}

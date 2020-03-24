@@ -41,17 +41,11 @@ class _TestScreenState extends State<StatefulWidget>
                           fontWeight: FontWeight.bold,
                           color: Colors.white),
                       textAlign: TextAlign.center,
-                    )
-                )
-            )
-            ,
+                    ))),
             Positioned(
                 child: Align(
                     alignment: FractionalOffset(.5, .2),
-                    child: AnimatedTypedText(key: UniqueKey())
-                )
-            )
-            ,
+                    child: AnimatedTypedText(key: UniqueKey()))),
             Positioned(
                 child: Align(
                     alignment: FractionalOffset(.5, 1),
@@ -65,24 +59,87 @@ class _TestScreenState extends State<StatefulWidget>
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Center(
-                child: Text("Do you want to play again?"),
+                child: Text(
+                  "Do you want to play again?",
+                  style: TextStyle(
+                      fontSize: 37,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
               ),
-              FlatButton(
-                  color: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      side: BorderSide(color: Colors.grey.shade200)),
-                  onPressed: GetIt
-                      .I<TestScreenPresenter>()
-                      .queryNextQuestion,
-                  child: Text(
-                    'Click Me',
-                    style: TextStyle(
-                        fontFamily: 'Lalezar',
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black),
-                  ))
+              Padding(
+                  padding: EdgeInsets.all(14.0),
+                  child: FlatButton(
+                      color: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          side: BorderSide(color: Colors.grey.shade200)),
+                      onPressed: () =>
+                          GetIt.I<TestScreenPresenter>().queryNextQuestion(),
+                      child:  Text(
+                            'Lets go',
+                            style: TextStyle(
+                                fontSize: 17,
+                                fontFamily: 'Lalezar',
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white),
+                          )))
             ]);
+        break;
+
+      case QuestionEvent.PROMPT_FEEDBACK:
+        return Stack(
+          children: <Widget>[
+            Positioned(
+                child: Align(
+                    alignment: FractionalOffset(.5, .4),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text(
+                            "Your valuable feedback is appreciated",
+                            style: TextStyle(
+                                fontSize: 37,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                            textAlign: TextAlign.start,
+                          ),
+                          TextField(
+                            textInputAction: TextInputAction.newline,
+                            keyboardType: TextInputType.multiline,
+                            autofocus: true,
+                            maxLines: 5,
+                            style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.white),
+                            textAlign: TextAlign.start,
+                          ),
+                          Padding(
+                              padding: EdgeInsets.all(14.0),
+                              child: FlatButton(
+                                  onPressed: () =>
+                                      GetIt.I<TestScreenPresenter>()
+                                          .postFeedback(),
+                                  color: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                      side: BorderSide(
+                                          color: Colors.grey.shade200)),
+                                  child: Text(
+                                    'Submit',
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontFamily: 'Lalezar',
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white),
+                                  )))
+                        ])))
+          ],
+        );
         break;
     }
   }
@@ -90,10 +147,7 @@ class _TestScreenState extends State<StatefulWidget>
   @override
   void initState() {
     GetIt.I.registerSingleton<TestScreenPresenter>(TestScreenPresenter());
-    GetIt
-        .I<TestScreenPresenter>()
-        .questionEventStream
-        .listen((event) {
+    GetIt.I<TestScreenPresenter>().questionEventStream.listen((event) {
       this.currentState = event;
       setState(() {
         _animationController.forward(from: 0);
@@ -132,9 +186,4 @@ class _TestScreenState extends State<StatefulWidget>
       ],
     );
   }
-
-
-
-
 }
-
