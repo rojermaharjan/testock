@@ -13,6 +13,10 @@ class TestScreenPresenter {
 
   int _questionIndex;
 
+  int _feedbackQuestionIndex;
+
+  bool _hasProvidedFeedback;
+
   TestScreenPresenter() {
     _questionList = getDummyQuestions();
     _questionIndex = 0;
@@ -21,6 +25,14 @@ class TestScreenPresenter {
     _questionEventBloc = new BaseBehaviorBloc.withInitialData(
         QuestionEvent.NEW_QUESTION_ARRIVED);
     _answerEventBloc = new PublishSubject();
+
+    _performDefaultAction();
+  }
+
+  void _performDefaultAction() {
+    //TODO update the resepective flag accrodign the chose
+    _feedbackQuestionIndex = 6;
+    _hasProvidedFeedback = false;
   }
 
   Question getCurrentQuestion() {
@@ -28,37 +40,60 @@ class TestScreenPresenter {
   }
 
   String getCurrentQuestionIndex() {
-    return (_questionIndex+1).toString()+"/"+_questionList.length.toString();
+    if (!_hasProvidedFeedback)
+      return (_questionIndex + 1).toString() +
+          "/" +
+          _questionList.length.toString();
+    else
+      return (_questionIndex + 1).toString() +
+          "/" +
+          _feedbackQuestionIndex.toString();
   }
+
+
 
   queryNextQuestion() {
     _questionIndex++;
-    if (_questionIndex < _questionList.length) {
-      _questionBloc.updateState(_questionList[_questionIndex]);
-      _questionEventBloc.updateState(QuestionEvent.NEW_QUESTION_ARRIVED);
-      return;
+
+    //Has already provided feedback
+    if (_hasProvidedFeedback) {
+      //Provided feedback but replaying quiz
+      if (_questionIndex < _feedbackQuestionIndex) {
+        _questionBloc.updateState(_questionList[_questionIndex]);
+        _questionEventBloc.updateState(QuestionEvent.NEW_QUESTION_ARRIVED);
+      } else {
+        //Replaying quiz but avoid feedback question form second time
+        restartTest();
+      }
     }
-    restartTest();
+    //Not provided feedback
+    else {
+      //Allow to play quiz till end of the question list
+      if (_questionIndex < _questionList.length) {
+        _questionBloc.updateState(_questionList[_questionIndex]);
+        _questionEventBloc.updateState(QuestionEvent.NEW_QUESTION_ARRIVED);
+      } else {
+        //In the end after playing quiz, prompt feedback
+        _questionEventBloc.updateState(QuestionEvent.PROMPT_FEEDBACK);
+      }
+    }
   }
 
   restartTest() {
     _questionList.forEach((element) {
       element.answerOptions.forEach((element) {
-        element.isSelectedByUser=false;
+        element.isSelectedByUser = false;
       });
     });
     _questionIndex = -1;
-    _questionEventBloc.updateState(QuestionEvent.PROMPT_FEEDBACK);
+    _questionEventBloc.updateState(QuestionEvent.END_OF_QUESTION);
   }
 
-  postFeedback()
-  {
-    new Future.delayed(
-        Duration(milliseconds: 500), (){
+  postFeedback() {
+    new Future.delayed(Duration(milliseconds: 500), () {
+      _hasProvidedFeedback = true;
       _questionEventBloc.updateState(QuestionEvent.END_OF_QUESTION);
-
     });
-
   }
 
   Stream<QuestionEvent> get questionEventStream =>
@@ -70,7 +105,8 @@ class TestScreenPresenter {
     AnswerOption selectedAnswer =
         _questionBloc.getCurrentState().answerOptions[position];
     selectedAnswer.isSelectedByUser = true;
-    if(_questionBloc.getCurrentState().isQuestionOpinion)
+
+    if (_questionBloc.getCurrentState().isQuestionOpinion)
       _answerEventBloc.sink.add(AnswerEvent.OPINION);
     else if (selectedAnswer.isSelectedByUser && selectedAnswer.isCorrect)
       _answerEventBloc.sink.add(AnswerEvent.RIGHT_ANSWER_SELECTED);
@@ -79,6 +115,11 @@ class TestScreenPresenter {
   }
 }
 
-enum QuestionEvent { NEW_QUESTION_ARRIVED, LOADING, END_OF_QUESTION,PROMPT_FEEDBACK}
+enum QuestionEvent {
+  NEW_QUESTION_ARRIVED,
+  LOADING,
+  END_OF_QUESTION,
+  PROMPT_FEEDBACK
+}
 
 enum AnswerEvent { WRONG_ANSWER_SELECTED, RIGHT_ANSWER_SELECTED, OPINION }
