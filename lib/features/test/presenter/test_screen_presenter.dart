@@ -50,11 +50,9 @@ class TestScreenPresenter {
           _feedbackQuestionIndex.toString();
   }
 
-
-
   queryNextQuestion() {
     _questionIndex++;
-
+    print("Queried next question: $_hasProvidedFeedback $_questionIndex");
     //Has already provided feedback
     if (_hasProvidedFeedback) {
       //Provided feedback but replaying quiz
@@ -86,13 +84,14 @@ class TestScreenPresenter {
       });
     });
     _questionIndex = -1;
+
     _questionEventBloc.updateState(QuestionEvent.END_OF_QUESTION);
   }
 
   postFeedback() {
     new Future.delayed(Duration(milliseconds: 500), () {
       _hasProvidedFeedback = true;
-      _questionEventBloc.updateState(QuestionEvent.END_OF_QUESTION);
+      restartTest();
     });
   }
 
