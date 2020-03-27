@@ -31,7 +31,10 @@ class AnswerOption
   String toString() {
     return 'AnswerOption{answer: $answer, id: $id, isCorrect: $isCorrect, isSelectedByUser: $isSelectedByUser}';
   }
+}
 
+class Summary
+{
 
 }
 

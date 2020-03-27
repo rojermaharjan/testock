@@ -8,6 +8,7 @@ class TestScreenPresenter {
   BaseBehaviorBloc<Question> _questionBloc;
   BaseBehaviorBloc<QuestionEvent> _questionEventBloc;
   PublishSubject<AnswerEvent> _answerEventBloc;
+  PublishSubject<Summary> _summaryEventBloc;
 
   List<Question> _questionList;
 
@@ -25,6 +26,7 @@ class TestScreenPresenter {
     _questionEventBloc = new BaseBehaviorBloc.withInitialData(
         QuestionEvent.NEW_QUESTION_ARRIVED);
     _answerEventBloc = new PublishSubject();
+    _summaryEventBloc = new PublishSubject();
 
     _performDefaultAction();
   }
@@ -52,7 +54,6 @@ class TestScreenPresenter {
 
   queryNextQuestion() {
     _questionIndex++;
-    print("Queried next question: $_hasProvidedFeedback $_questionIndex");
     //Has already provided feedback
     if (_hasProvidedFeedback) {
       //Provided feedback but replaying quiz
@@ -64,12 +65,14 @@ class TestScreenPresenter {
         restartTest();
       }
     }
-    //Not provided feedback
+    //No provided feedback
     else {
       //Allow to play quiz till end of the question list
       if (_questionIndex < _questionList.length) {
         _questionBloc.updateState(_questionList[_questionIndex]);
         _questionEventBloc.updateState(QuestionEvent.NEW_QUESTION_ARRIVED);
+        if (_questionIndex == _feedbackQuestionIndex)
+          _summaryEventBloc.sink.add(Summary());
       } else {
         //In the end after playing quiz, prompt feedback
         _questionEventBloc.updateState(QuestionEvent.PROMPT_FEEDBACK);
@@ -100,6 +103,8 @@ class TestScreenPresenter {
 
   Stream<AnswerEvent> get answerEventStream => _answerEventBloc.stream;
 
+  Stream<Summary> get summaryEventStream => _summaryEventBloc.stream;
+
   void onAnswerSelected(int position) {
     AnswerOption selectedAnswer =
         _questionBloc.getCurrentState().answerOptions[position];
@@ -122,3 +127,5 @@ enum QuestionEvent {
 }
 
 enum AnswerEvent { WRONG_ANSWER_SELECTED, RIGHT_ANSWER_SELECTED, OPINION }
+
+enum SummaryEvent { SHOW_SUMMARY }

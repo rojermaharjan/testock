@@ -77,14 +77,14 @@ class _TestScreenState extends State<StatefulWidget>
                           side: BorderSide(color: Colors.grey.shade200)),
                       onPressed: () =>
                           GetIt.I<TestScreenPresenter>().queryNextQuestion(),
-                      child:  Text(
-                            'Lets go',
-                            style: TextStyle(
-                                fontSize: 17,
-                                fontFamily: 'Lalezar',
-                                fontWeight: FontWeight.w400,
-                                color: Colors.white),
-                          )))
+                      child: Text(
+                        'Lets go',
+                        style: TextStyle(
+                            fontSize: 17,
+                            fontFamily: 'Lalezar',
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white),
+                      )))
             ]);
         break;
 
@@ -154,6 +154,10 @@ class _TestScreenState extends State<StatefulWidget>
       });
     });
 
+    GetIt.I<TestScreenPresenter>().summaryEventStream.listen((event) {
+      _showSummaryScreen();
+    });
+
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 500),
@@ -172,6 +176,28 @@ class _TestScreenState extends State<StatefulWidget>
     GetIt.I.unregister<TestScreenPresenter>();
     _animationController.dispose();
     super.dispose();
+  }
+
+  void _showSummaryScreen() {
+    showGeneralDialog(
+      context: context,
+      barrierColor: Colors.black12.withOpacity(0.6), // background color
+      pageBuilder: (BuildContext buildContext, Animation<double> animation,
+          Animation<double> secondaryAnimation) {
+        return Wrap(
+          children: <Widget>[
+            Container(
+              width: 200.0,
+              height: 200.0,
+              color: Colors.orange,
+            ),
+          ],
+        );
+      },
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      transitionDuration: const Duration(milliseconds: 200),
+    );
   }
 
   _getAnswerOptionWidget() {
