@@ -62,21 +62,32 @@ class TestScreenPresenter {
         _questionEventBloc.updateState(QuestionEvent.NEW_QUESTION_ARRIVED);
       } else {
         //Replaying quiz but avoid feedback question form second time
-        restartTest();
+        _showSummary();
       }
     }
     //No provided feedback
     else {
       //Allow to play quiz till end of the question list
       if (_questionIndex < _questionList.length) {
-        _questionBloc.updateState(_questionList[_questionIndex]);
-        _questionEventBloc.updateState(QuestionEvent.NEW_QUESTION_ARRIVED);
         if (_questionIndex == _feedbackQuestionIndex)
-          _summaryEventBloc.sink.add(Summary());
+          _showSummary();
+        else {
+          _questionBloc.updateState(_questionList[_questionIndex]);
+          _questionEventBloc.updateState(QuestionEvent.NEW_QUESTION_ARRIVED);
+        }
       } else {
         //In the end after playing quiz, prompt feedback
         _questionEventBloc.updateState(QuestionEvent.PROMPT_FEEDBACK);
       }
+    }
+  }
+
+  onSummaryReviewd() {
+    if (_hasProvidedFeedback)
+      restartTest();
+    else {
+      _questionBloc.updateState(_questionList[_questionIndex]);
+      _questionEventBloc.updateState(QuestionEvent.NEW_QUESTION_ARRIVED);
     }
   }
 
@@ -116,6 +127,11 @@ class TestScreenPresenter {
       _answerEventBloc.sink.add(AnswerEvent.RIGHT_ANSWER_SELECTED);
     else
       _answerEventBloc.sink.add(AnswerEvent.WRONG_ANSWER_SELECTED);
+  }
+
+  void _showSummary() {
+    _summaryEventBloc.sink
+        .add(Summary.createFrom(this._questionList, _feedbackQuestionIndex));
   }
 }
 

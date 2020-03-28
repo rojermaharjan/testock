@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:testockmbl/features/test/view/test_screen_widget.dart';
+import 'package:testockmbl/features/test/view/test_screen.dart';
 
 // void main() => runApp(MyApp());
 void main() => runApp(MyApp());

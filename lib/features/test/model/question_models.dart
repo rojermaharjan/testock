@@ -1,5 +1,7 @@
 
 
+import 'package:flutter/cupertino.dart';
+
 class Question
 {
   Question(this.question, this.answerOptions)
@@ -11,6 +13,12 @@ class Question
   List<AnswerOption> answerOptions;
 
   bool isQuestionOpinion;
+
+  @override
+  String toString() {
+    return 'Question{question: $question, answerOptions: $answerOptions, isQuestionOpinion: $isQuestionOpinion}';
+  }
+
 
 }
 
@@ -35,6 +43,43 @@ class AnswerOption
 
 class Summary
 {
+  int totalQuestions;
+  int correctAnswers;
+  int incorrectAnswers;
+
+  Summary({@required this.totalQuestions,@required this.correctAnswers, @required this.incorrectAnswers});
+
+  static Summary createFrom(List<Question> questionList, int feedbackQuestionIndex) {
+    int totalQuestion=feedbackQuestionIndex>0?feedbackQuestionIndex:questionList.length-1;
+    int correctAnswers=0;
+    int incorrectAnswers=0;
+
+    for(int i=0;i<feedbackQuestionIndex;i++)
+      {
+        Question question=questionList[i];
+        for(AnswerOption ans in question.answerOptions)
+          {
+            if(ans.isSelectedByUser)
+              {
+                print(ans);
+                if(ans.isCorrect)
+                  correctAnswers+=1;
+                else
+                  incorrectAnswers+=1;
+              }
+          }
+      }
+
+    Summary summary= Summary(totalQuestions: totalQuestion,correctAnswers: correctAnswers,incorrectAnswers: incorrectAnswers);
+    return summary;
+
+  }
+
+  @override
+  String toString() {
+    return 'Summary{totalQuestions: $totalQuestions, correctAnswers: $correctAnswers, incorrectAnswers: $incorrectAnswers}';
+  }
+
 
 }
 

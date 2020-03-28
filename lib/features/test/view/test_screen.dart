@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:testockmbl/common/widget/animated_outline_button.dart';
 import 'package:testockmbl/common/widget/animated_typed_text.dart';
+import 'package:testockmbl/features/test/model/question_models.dart';
 import 'package:testockmbl/features/test/presenter/test_screen_presenter.dart';
+import 'package:testockmbl/features/test/view/test_summary_screen.dart';
 
 class TestScreen extends StatefulWidget {
   @override
@@ -19,6 +21,8 @@ class _TestScreenState extends State<StatefulWidget>
   AnimationController _animationController;
 
   Animation _animation;
+
+  bool isSummaryDialogRenderedCompletely;
 
   @override
   Widget build(BuildContext context) {
@@ -154,8 +158,8 @@ class _TestScreenState extends State<StatefulWidget>
       });
     });
 
-    GetIt.I<TestScreenPresenter>().summaryEventStream.listen((event) {
-      _showSummaryScreen();
+    GetIt.I<TestScreenPresenter>().summaryEventStream.listen((summary) {
+      _showSummaryScreen(summary);
     });
 
     _animationController = AnimationController(
@@ -178,23 +182,25 @@ class _TestScreenState extends State<StatefulWidget>
     super.dispose();
   }
 
-  void _showSummaryScreen() {
+  void _showSummaryScreen(Summary summary) {
+    isSummaryDialogRenderedCompletely = false;
     showGeneralDialog(
       context: context,
-      barrierColor: Colors.black12.withOpacity(0.6), // background color
+      barrierColor: Colors.black12.withOpacity(0.6),
+      // background color
       pageBuilder: (BuildContext buildContext, Animation<double> animation,
           Animation<double> secondaryAnimation) {
-        return Wrap(
-          children: <Widget>[
-            Container(
-              width: 200.0,
-              height: 200.0,
-              color: Colors.orange,
-            ),
-          ],
+        return TestSummary(summaryDetail: summary,onSummaryReviewed: () {
+          GetIt.I<TestScreenPresenter>().onSummaryReviewd();
+        });
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: animation,
+          child: child,
         );
       },
-      barrierDismissible: true,
+      barrierDismissible: false,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
       transitionDuration: const Duration(milliseconds: 200),
     );
