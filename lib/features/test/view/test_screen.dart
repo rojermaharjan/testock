@@ -15,17 +15,17 @@ class TestScreen extends StatefulWidget {
 }
 
 class _TestScreenState extends State<StatefulWidget>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   QuestionEvent currentState;
-
-  AnimationController _animationController;
-
-  Animation _animation;
 
   bool isSummaryDialogRenderedCompletely;
 
+  AnimationController _controller;
+  Animation _offsetAnimation;
+
   @override
   Widget build(BuildContext context) {
+
     switch (currentState) {
       case QuestionEvent.LOADING:
         return Center(
@@ -58,38 +58,48 @@ class _TestScreenState extends State<StatefulWidget>
         );
 
       case QuestionEvent.END_OF_QUESTION:
-        return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Center(
-                child: Text(
-                  "Do you want to play again?",
-                  style: TextStyle(
-                      fontSize: 37,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              Padding(
-                  padding: EdgeInsets.all(14.0),
-                  child: FlatButton(
-                      color: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          side: BorderSide(color: Colors.grey.shade200)),
-                      onPressed: () =>
-                          GetIt.I<TestScreenPresenter>().queryNextQuestion(),
-                      child: Text(
-                        'Lets go',
-                        style: TextStyle(
-                            fontSize: 17,
-                            fontFamily: 'Lalezar',
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white),
-                      )))
-            ]);
+        return
+
+              SlideTransition(
+              position: _offsetAnimation,
+              child:
+              Container(
+                  color: Colors.cyan,
+                  width: 200,
+                  child:Text("Something"))
+          );
+
+//        return Column(
+//                crossAxisAlignment: CrossAxisAlignment.center,
+//                mainAxisSize: MainAxisSize.min,
+//                children: <Widget>[
+//                  Text(
+//                    "Do you want to play again?",
+//                    style: TextStyle(
+//                        fontSize: 37,
+//                        fontWeight: FontWeight.bold,
+//                        color: Colors.white),
+//                    textAlign: TextAlign.center,
+//                  ),
+//                  Padding(
+//                      padding: EdgeInsets.all(14.0),
+//                      child: FlatButton(
+//                          color: Colors.transparent,
+//                          shape: RoundedRectangleBorder(
+//                              borderRadius: BorderRadius.circular(30),
+//                              side: BorderSide(color: Colors.grey.shade200)),
+//                          onPressed: () => GetIt.I<TestScreenPresenter>()
+//                              .queryNextQuestion(),
+//                          child: Text(
+//                            'Lets go',
+//                            style: TextStyle(
+//                                fontSize: 17,
+//                                fontFamily: 'Lalezar',
+//                                fontWeight: FontWeight.w400,
+//                                color: Colors.white),
+//                          )))
+//                ]
+//          );
         break;
 
       case QuestionEvent.PROMPT_FEEDBACK:
@@ -150,36 +160,33 @@ class _TestScreenState extends State<StatefulWidget>
 
   @override
   void initState() {
+    _controller = AnimationController(
+      duration: const Duration(seconds: 3),
+      vsync: this,
+    );
+    _offsetAnimation = Tween<Offset>(
+      begin: Offset.zero,
+      end: Offset(0, 3)
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.elasticIn,
+    ));
     GetIt.I.registerSingleton<TestScreenPresenter>(TestScreenPresenter());
     GetIt.I<TestScreenPresenter>().questionEventStream.listen((event) {
       this.currentState = event;
-      setState(() {
-        _animationController.forward(from: 0);
-      });
+      setState(() {});
     });
 
     GetIt.I<TestScreenPresenter>().summaryEventStream.listen((summary) {
       _showSummaryScreen(summary);
     });
-
-    _animationController = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 500),
-    );
-
-    _animationController.drive(CurveTween(curve: Curves.linear));
-
-    _animation = Tween(
-      begin: 1.7,
-      end: 1.0,
-    ).animate(_animationController);
   }
 
   @override
   void dispose() {
-    GetIt.I.unregister<TestScreenPresenter>();
-    _animationController.dispose();
     super.dispose();
+    _controller.dispose();
+    GetIt.I.unregister<TestScreenPresenter>();
   }
 
   void _showSummaryScreen(Summary summary) {
@@ -190,9 +197,11 @@ class _TestScreenState extends State<StatefulWidget>
       // background color
       pageBuilder: (BuildContext buildContext, Animation<double> animation,
           Animation<double> secondaryAnimation) {
-        return TestSummary(summaryDetail: summary,onSummaryReviewed: () {
-          GetIt.I<TestScreenPresenter>().onSummaryReviewd();
-        });
+        return TestSummary(
+            summaryDetail: summary,
+            onSummaryReviewed: () {
+              GetIt.I<TestScreenPresenter>().onSummaryReviewd();
+            });
       },
       transitionBuilder: (context, animation, secondaryAnimation, child) {
         return FadeTransition(
@@ -218,4 +227,6 @@ class _TestScreenState extends State<StatefulWidget>
       ],
     );
   }
+
+
 }
