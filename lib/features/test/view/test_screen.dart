@@ -25,7 +25,6 @@ class _TestScreenState extends State<StatefulWidget>
 
   @override
   Widget build(BuildContext context) {
-
     switch (currentState) {
       case QuestionEvent.LOADING:
         return Center(
@@ -33,6 +32,7 @@ class _TestScreenState extends State<StatefulWidget>
         );
         break;
       case QuestionEvent.NEW_QUESTION_ARRIVED:
+        _controller.forward(from:0);
         return Stack(
           children: <Widget>[
             Positioned(
@@ -50,56 +50,57 @@ class _TestScreenState extends State<StatefulWidget>
                 child: Align(
                     alignment: FractionalOffset(.5, .2),
                     child: AnimatedTypedText(key: UniqueKey()))),
-            Positioned(
-                child: Align(
-                    alignment: FractionalOffset(.5, 1),
-                    child: _getAnswerOptionWidget()))
+            SlideTransition
+              (position: _offsetAnimation,
+              child:Positioned(
+                  child: Align(
+                      alignment: FractionalOffset(.5, 1),
+                      child: _getAnswerOptionWidget())) ,
+            )
+
           ],
         );
 
       case QuestionEvent.END_OF_QUESTION:
-        return
+        _controller.forward();
+        return SlideTransition(
+            position: _offsetAnimation,
+            child: Positioned.fill(
+                child: Align(
+              alignment: Alignment.center,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      "Do you want to play again?",
+                      style: TextStyle(
+                          fontSize: 37,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                    Padding(
+                        padding: EdgeInsets.all(14.0),
+                        child: FlatButton(
+                            color: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                side: BorderSide(color: Colors.grey.shade200)),
+                            onPressed: () => GetIt.I<TestScreenPresenter>()
+                                .queryNextQuestion(),
+                            child: Text(
+                              'Lets go',
+                              style: TextStyle(
+                                  fontSize: 17,
+                                  fontFamily: 'Lalezar',
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white),
+                            )))
+                  ]),
+            )));
 
-              SlideTransition(
-              position: _offsetAnimation,
-              child:
-              Container(
-                  color: Colors.cyan,
-                  width: 200,
-                  child:Text("Something"))
-          );
-
-//        return Column(
-//                crossAxisAlignment: CrossAxisAlignment.center,
-//                mainAxisSize: MainAxisSize.min,
-//                children: <Widget>[
-//                  Text(
-//                    "Do you want to play again?",
-//                    style: TextStyle(
-//                        fontSize: 37,
-//                        fontWeight: FontWeight.bold,
-//                        color: Colors.white),
-//                    textAlign: TextAlign.center,
-//                  ),
-//                  Padding(
-//                      padding: EdgeInsets.all(14.0),
-//                      child: FlatButton(
-//                          color: Colors.transparent,
-//                          shape: RoundedRectangleBorder(
-//                              borderRadius: BorderRadius.circular(30),
-//                              side: BorderSide(color: Colors.grey.shade200)),
-//                          onPressed: () => GetIt.I<TestScreenPresenter>()
-//                              .queryNextQuestion(),
-//                          child: Text(
-//                            'Lets go',
-//                            style: TextStyle(
-//                                fontSize: 17,
-//                                fontFamily: 'Lalezar',
-//                                fontWeight: FontWeight.w400,
-//                                color: Colors.white),
-//                          )))
-//                ]
-//          );
         break;
 
       case QuestionEvent.PROMPT_FEEDBACK:
@@ -161,15 +162,13 @@ class _TestScreenState extends State<StatefulWidget>
   @override
   void initState() {
     _controller = AnimationController(
-      duration: const Duration(seconds: 3),
+      duration: const Duration(milliseconds: 2200),
       vsync: this,
     );
-    _offsetAnimation = Tween<Offset>(
-      begin: Offset.zero,
-      end: Offset(0, 3)
-    ).animate(CurvedAnimation(
+    _offsetAnimation = Tween<Offset>(begin: Offset(0, .3), end:Offset.zero )
+        .animate(CurvedAnimation(
       parent: _controller,
-      curve: Curves.elasticIn,
+      curve: Curves.elasticOut,
     ));
     GetIt.I.registerSingleton<TestScreenPresenter>(TestScreenPresenter());
     GetIt.I<TestScreenPresenter>().questionEventStream.listen((event) {
@@ -227,6 +226,4 @@ class _TestScreenState extends State<StatefulWidget>
       ],
     );
   }
-
-
 }
