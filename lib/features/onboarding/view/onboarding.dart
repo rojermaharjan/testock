@@ -57,10 +57,9 @@ class _OnBoardingState extends State<StatefulWidget>
       });
 
     _tabSelectedAnimationController.addStatusListener((status) {
-      if(status==AnimationStatus.completed)
-        {
-          _lastSelectedTab=_requestedTabIndex;
-        }
+      if (status == AnimationStatus.completed) {
+        _lastSelectedTab = _requestedTabIndex;
+      }
     });
 
     _tabSelectionAnimation = Tween<double>(begin: 0, end: 1).animate(
@@ -195,14 +194,14 @@ class SwipableArc extends CustomPainter {
   Paint selectedRightArcPaint;
   Path selectedRightArcPath;
 
-  SELECTED_TAB _requestNextTab;
+  SELECTED_TAB _requestedNextTab;
   SELECTED_TAB _lastSelectedTabIndex;
 
   Animation<double> _selectedTabAnimation;
   Animation<double> _reverseSelectedTabAnimation;
 
-  SwipableArc(this._animation, this._requestNextTab, this._lastSelectedTabIndex,
-      this._selectedTabAnimation)
+  SwipableArc(this._animation, this._requestedNextTab,
+      this._lastSelectedTabIndex, this._selectedTabAnimation)
       : super(repaint: _animation) {
     swipeArcPath = Path();
     swipeArcPaint = Paint();
@@ -243,12 +242,7 @@ class SwipableArc extends CustomPainter {
 
     canvas.drawPath(swipeArcPath, swipeArcPaint);
 
-//    canvas.save();
-//
-    print("previousTab : $_lastSelectedTabIndex");
-    print("currentTab : $_requestNextTab");
-
-    if (_requestNextTab != SELECTED_TAB.NONE) {
+    if (_requestedNextTab != SELECTED_TAB.NONE) {
       //TODO currently selected arc offset is fixed, later it should be derived from its paint stroke width.
       selectedRightArcPath.moveTo(-2, outerControlPointY - 4);
       selectedRightArcPath.cubicTo(
@@ -259,18 +253,26 @@ class SwipableArc extends CustomPainter {
           size.width + 2,
           outerControlPointY - 4);
 
-      if (_requestNextTab == SELECTED_TAB.RIGHT) {
-        canvas.clipRect(
-            Rect.fromLTRB(size.width * .5 * _selectedTabAnimation.value, 0,
-                size.width, outerControlPointY),
-            doAntiAlias: true);
+      if (_requestedNextTab == SELECTED_TAB.RIGHT) {
+        if (_lastSelectedTabIndex == SELECTED_TAB.LEFT) {
+          canvas.clipRect(
+              Rect.fromLTRB(size.width * .5 * _selectedTabAnimation.value, 0,
+                  size.width * .5+(_selectedTabAnimation.value*(.5*size.width))
+                  , outerControlPointY),
+              doAntiAlias: true);
+        } else {
+          canvas.clipRect(
+              Rect.fromLTRB( size.width - (size.width * 0.5 * _selectedTabAnimation.value), 0,
+                  size.width, outerControlPointY),
+              doAntiAlias: true);
+        }
       } else {
         if (_lastSelectedTabIndex == SELECTED_TAB.RIGHT) {
           canvas.clipRect(
               Rect.fromLTRB(
                   size.width * .5 * _reverseSelectedTabAnimation.value,
                   0,
-                  size.width -(size.width*0.5*_selectedTabAnimation.value),
+                  size.width - (size.width * 0.5 * _selectedTabAnimation.value),
                   outerControlPointY),
               doAntiAlias: true);
         } else {
@@ -282,8 +284,6 @@ class SwipableArc extends CustomPainter {
       }
       canvas.drawPath(selectedRightArcPath, selectedRightArcPaint);
     }
-
-//    canvas.restore();
   }
 
   @override
