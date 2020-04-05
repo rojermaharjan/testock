@@ -35,28 +35,28 @@ class _TestScreenState extends State<StatefulWidget>
       case QuestionEvent.NEW_QUESTION_ARRIVED:
         _controller.forward(from: 0);
         return _getNewQuestionWidget();
+        break;
 
       case QuestionEvent.END_OF_QUESTION:
         _controller.forward(from: 0);
-        return SlideTransition(
-            position: _slideInAnimation, child: _getEndOfQuestionWidget());
+        return _getEndOfQuestionWidget();
         break;
 
       case QuestionEvent.PROMPT_FEEDBACK:
         _controller.forward(from: 0);
-        return SlideTransition(
-            position: _slideInAnimation, child: _getFeedbackPropmtWidget());
+        return _getFeedbackPropmtWidget();
         break;
     }
   }
 
   @override
   void initState() {
+    super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 2300),
+      duration: const Duration(milliseconds: 1900),
       vsync: this,
     );
-    _slideInAnimation = Tween<Offset>(begin: Offset(0, .27), end: Offset.zero)
+    _slideInAnimation = Tween<Offset>(begin: Offset(0, .4), end: Offset.zero)
         .animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.elasticOut,
@@ -108,39 +108,41 @@ class _TestScreenState extends State<StatefulWidget>
   Widget _getEndOfQuestionWidget() {
     return Positioned.fill(
         child: Align(
-      alignment: Alignment.center,
-      child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              "Do you want to play again?",
-              style: TextStyle(
-                  fontSize: 37,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-              textAlign: TextAlign.center,
-            ),
-            Padding(
-                padding: EdgeInsets.all(14.0),
-                child: FlatButton(
-                    color: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        side: BorderSide(color: Colors.grey.shade200)),
-                    onPressed: () =>
-                        GetIt.I<TestScreenPresenter>().queryNextQuestion(),
-                    child: Text(
-                      'Lets go',
-                      style: TextStyle(
-                          fontSize: 17,
-                          fontFamily: 'Lalezar',
-                          fontWeight: FontWeight.w400,
-                          color: Colors.white),
-                    )))
-          ]),
-    ));
+            alignment: Alignment.center,
+            child: SlideTransition(
+                position: _slideInAnimation,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "Do you want to play again?",
+                        style: TextStyle(
+                            fontSize: 37,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ),
+                      Padding(
+                          padding: EdgeInsets.all(14.0),
+                          child: FlatButton(
+                              color: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  side:
+                                      BorderSide(color: Colors.grey.shade200)),
+                              onPressed: () => GetIt.I<TestScreenPresenter>()
+                                  .queryNextQuestion(),
+                              child: Text(
+                                'Lets go',
+                                style: TextStyle(
+                                    fontSize: 17,
+                                    fontFamily: 'Lalezar',
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.white),
+                              )))
+                    ]))));
   }
 
   Widget _getNewQuestionWidget() {
@@ -161,11 +163,11 @@ class _TestScreenState extends State<StatefulWidget>
             child: Align(
                 alignment: FractionalOffset(.5, .2),
                 child: AnimatedTypedText(key: UniqueKey()))),
-        SlideTransition(
-          position: _slideInAnimation,
-          child: Positioned(
-              child: Align(
-                  alignment: FractionalOffset(.5, 1),
+        Positioned(
+          child: Align(
+              alignment: FractionalOffset(.5, 1),
+              child: SlideTransition(
+                  position: _slideInAnimation,
                   child: _getAnswerOptionWidget())),
         )
       ],
@@ -186,53 +188,54 @@ class _TestScreenState extends State<StatefulWidget>
   }
 
   Widget _getFeedbackPropmtWidget() {
-    return  Positioned(
+    return Positioned.fill(
         child: Align(
             alignment: FractionalOffset(.5, .4),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    "Your valuable feedback is appreciated",
-                    style: TextStyle(
-                        fontSize: 37,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                    textAlign: TextAlign.start,
-                  ),
-                  TextField(
-                    textInputAction: TextInputAction.newline,
-                    keyboardType: TextInputType.multiline,
-                    autofocus: true,
-                    maxLines: 5,
-                    style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.white),
-                    textAlign: TextAlign.start,
-                  ),
-                  Padding(
-                      padding: EdgeInsets.all(14.0),
-                      child: FlatButton(
-                          onPressed: () =>
-                              GetIt.I<TestScreenPresenter>()
-                                  .postFeedback(),
-                          color: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                              side: BorderSide(
-                                  color: Colors.grey.shade200)),
-                          child: Text(
-                            'Submit',
-                            style: TextStyle(
-                                fontSize: 17,
-                                fontFamily: 'Lalezar',
-                                fontWeight: FontWeight.w400,
-                                color: Colors.white),
-                          )))
-                ])));
+            child: SlideTransition(
+              position: _slideInAnimation,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      "Your valuable feedback is appreciated",
+                      style: TextStyle(
+                          fontSize: 37,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                      textAlign: TextAlign.start,
+                    ),
+                    TextField(
+                      textInputAction: TextInputAction.newline,
+                      keyboardType: TextInputType.multiline,
+                      autofocus: false,
+                      showCursor: true,
+                      maxLines: 5,
+                      style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.white),
+                      textAlign: TextAlign.start,
+                    ),
+                    Padding(
+                        padding: EdgeInsets.all(14.0),
+                        child: FlatButton(
+                            onPressed: () =>
+                                GetIt.I<TestScreenPresenter>().postFeedback(),
+                            color: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                side: BorderSide(color: Colors.grey.shade200)),
+                            child: Text(
+                              'Submit',
+                              style: TextStyle(
+                                  fontSize: 17,
+                                  fontFamily: 'Lalezar',
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white),
+                            )))
+                  ]),
+            )));
   }
-
 }

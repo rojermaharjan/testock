@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:testockmbl/features/test/view/test_screen.dart';
+import 'package:testockmbl/features/onboarding/view/onboarding.dart';
 
 // void main() => runApp(MyApp());
 void main() => runApp(MyApp());
@@ -25,15 +25,13 @@ class MyApp extends StatelessWidget {
       ),
       home:
       Scaffold(
-        body: Container(
+        body:
+
+        Container(
             height: double.infinity,
             width: double.infinity,
             decoration: backgroundDecoration,
-            child: Padding(
-              child:
-                  Stack(children:[TestScreen()]),
-              padding: EdgeInsets.all(30),
-          )
+            child:  Stack(children:[OnBoarding()])
         ),
       )
 
@@ -45,7 +43,6 @@ class MyApp extends StatelessWidget {
 const backgroundDecoration = BoxDecoration(
   gradient: LinearGradient(
     colors: [
-//      Color.fromRGBO(228, 180, 194, 1),
       Color.fromRGBO(55, 81, 126, 1),
       Color.fromRGBO(232, 148, 173, 1),
     ],
