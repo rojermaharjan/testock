@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:testockmbl/common/widget/swippable_arc_bg.dart';
 
 class OnBoarding extends StatefulWidget {
   @override
@@ -7,6 +8,7 @@ class OnBoarding extends StatefulWidget {
     return _OnBoardingState();
   }
 }
+
 /**
  * The idea for this onboarding process is two break it into two scene.
  * 1) Intially the promo of app is shown as scene one.
@@ -14,18 +16,16 @@ class OnBoarding extends StatefulWidget {
  */
 class _OnBoardingState extends State<StatefulWidget>
     with TickerProviderStateMixin {
-  AnimationController _onboardingAnimationController;
-
-  Animation _curveExpansionAnimation;
-  final double _curveExpansionEndValue = .3;
-
-  SELECTED_TAB _requestedTabIndex;
+  AnimationController _onboardingAnimationSceneController;
+  Animation _swippableCurveAnimation;
+  final double _swippableCurveTopOffsetRelativeToScreen = .6;
 
   AnimationController _tabSelectedAnimationController;
-
   Animation<double> _tabSelectionAnimation;
-
   SELECTED_TAB _lastSelectedTab;
+  SELECTED_TAB _requestedTabIndex;
+
+  static final int ONBOARDING_SCENE_ANIM_DURATION=1400;
 
   @override
   Widget build(BuildContext context) {
@@ -35,23 +35,19 @@ class _OnBoardingState extends State<StatefulWidget>
   @override
   void initState() {
     super.initState();
+
+    _onboardingAnimationSceneController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: ONBOARDING_SCENE_ANIM_DURATION),
+    );
+    _swippableCurveAnimation =
+        Tween<double>(begin: 0, end: _swippableCurveTopOffsetRelativeToScreen)
+            .animate(CurvedAnimation(
+                curve: Curves.elasticOut,
+                parent: _onboardingAnimationSceneController));
+
     _requestedTabIndex = SELECTED_TAB.NONE;
     _lastSelectedTab = SELECTED_TAB.NONE;
-
-    _onboardingAnimationController = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 1200),
-    );
-
-    _onboardingAnimationController.addListener(() {
-      _onTabSelected(SELECTED_TAB.LEFT, 200);
-    });
-
-    _curveExpansionAnimation =
-        Tween<double>(begin: 0, end: _curveExpansionEndValue).animate(
-            CurvedAnimation(
-                curve: Curves.elasticOut,
-                parent: _onboardingAnimationController));
 
     _tabSelectedAnimationController = AnimationController(
       vsync: this,
@@ -71,12 +67,11 @@ class _OnBoardingState extends State<StatefulWidget>
             curve: Curves.easeOut, parent: _tabSelectedAnimationController));
   }
 
-  _onTabSelected(SELECTED_TAB selectedTabIndex, int delayInMilli) {
-    this._requestedTabIndex = selectedTabIndex;
-    _tabSelectedAnimationController.forward(from: 0);
-//    Future.delayed(Duration(milliseconds: delayInMilli), () {
-//      _tabSelectedAnimationController.forward(from:0);
-//    });
+  _onTabSelected(SELECTED_TAB selectedTabIndex) {
+    if (this._requestedTabIndex != selectedTabIndex) {
+      this._requestedTabIndex = selectedTabIndex;
+      _tabSelectedAnimationController.forward(from: 0);
+    }
   }
 
   Widget _getJhonnyVinoOnBoardingScreen() {
@@ -86,16 +81,17 @@ class _OnBoardingState extends State<StatefulWidget>
             height: double.infinity,
             width: double.infinity,
             child: CustomPaint(
-              painter: SwipableArc(_curveExpansionAnimation, _requestedTabIndex,
+              painter: SwipableArc(_swippableCurveAnimation, _requestedTabIndex,
                   _lastSelectedTab, _tabSelectionAnimation),
             )),
         _getHeaderLoginRegisterView(),
+        _getCurrentSelectedTabContent(),
         Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
                 padding: EdgeInsets.all(10),
                 child: FlatButton(
-                    onPressed: this.startAnimation,
+                    onPressed: this._startTransitionFromFirstScene,
                     color: Colors.transparent,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
@@ -107,7 +103,7 @@ class _OnBoardingState extends State<StatefulWidget>
                           fontFamily: 'Lalezar',
                           fontWeight: FontWeight.w400,
                           color: Colors.black),
-                    ))))
+                    )))),
       ],
     );
   }
@@ -116,13 +112,27 @@ class _OnBoardingState extends State<StatefulWidget>
 
   void onRegisterBtnPressed() {}
 
-  void startAnimation() {
-    _onboardingAnimationController.forward(from: 0);
+  /**
+   * Load second scene and pre-select tab first
+   */
+  void _startTransitionFromFirstScene() {
+    _onboardingAnimationSceneController.addListener(() {
+      setState(() {});
+    });
+
+    _onboardingAnimationSceneController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _onboardingAnimationSceneController.removeStatusListener(null);
+        _onboardingAnimationSceneController.removeListener(null);
+        _onTabSelected(SELECTED_TAB.LEFT);
+      }
+    });
+    _onboardingAnimationSceneController.forward(from: 0);
   }
 
   Widget _getHeaderLoginRegisterView() {
     return AnimatedBuilder(
-      animation: _onboardingAnimationController,
+      animation: _onboardingAnimationSceneController,
       builder: (context, builder) {
         return Row(
           mainAxisSize: MainAxisSize.max,
@@ -132,13 +142,13 @@ class _OnBoardingState extends State<StatefulWidget>
             Expanded(
                 child: GestureDetector(
               behavior: HitTestBehavior.translucent,
-              onTap: () => _onTabSelected(SELECTED_TAB.LEFT, 0),
+              onTap: () => _onTabSelected(SELECTED_TAB.LEFT),
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Padding(
                     padding: EdgeInsets.fromLTRB(0, 70, 0, 0),
                     child: Opacity(
-                        opacity: _onboardingAnimationController.value,
+                        opacity: _onboardingAnimationSceneController.value,
                         child: Text(
                           'Login',
                           style: TextStyle(
@@ -152,13 +162,13 @@ class _OnBoardingState extends State<StatefulWidget>
             Expanded(
                 child: GestureDetector(
               behavior: HitTestBehavior.translucent,
-              onTap: () => _onTabSelected(SELECTED_TAB.RIGHT, 0),
+              onTap: () => _onTabSelected(SELECTED_TAB.RIGHT),
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Padding(
                     padding: EdgeInsets.fromLTRB(0, 70, 0, 0),
                     child: Opacity(
-                        opacity: _onboardingAnimationController.value,
+                        opacity: _onboardingAnimationSceneController.value,
                         child: Text(
                           'SignUp',
                           style: TextStyle(
@@ -175,126 +185,27 @@ class _OnBoardingState extends State<StatefulWidget>
     );
   }
 
-  Widget _getHeaderLogoView() {
-    return ScaleTransition(
-      scale: _onboardingAnimationController,
-      child: Icon(Icons.account_circle),
+  _getCurrentSelectedTabContent() {
+    String selectedTab = "";
+    if (_requestedTabIndex == SELECTED_TAB.RIGHT) {
+      selectedTab = "REGISTER";
+    } else if (_requestedTabIndex == SELECTED_TAB.LEFT) {
+      selectedTab = "LOGIN";
+    } else {
+      selectedTab = "ONBOARDING";
+    }
+    return Align(
+      alignment: Alignment.center,
+      child: Padding(
+          padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+          child: Text(
+            selectedTab,
+            style: TextStyle(
+                fontSize: 13,
+                fontFamily: 'Lalezar',
+                fontWeight: FontWeight.w800,
+                color: Colors.black),
+          )),
     );
   }
 }
-
-class SwipableArc extends CustomPainter {
-  final Animation<double> _animation;
-  double _curveHeightScale = .6;
-  double _curveFocalControlPointHeightScale = .5;
-
-  double selectedArcStrokeWidth = 8;
-
-  Paint swipeArcPaint;
-  Path swipeArcPath;
-
-  Paint selectedLeftArcPaint;
-
-  Paint selectedRightArcPaint;
-  Path selectedRightArcPath;
-
-  SELECTED_TAB _requestedNextTab;
-  SELECTED_TAB _lastSelectedTabIndex;
-
-  Animation<double> _selectedTabAnimation;
-  Animation<double> _reverseSelectedTabAnimation;
-
-  SwipableArc(this._animation, this._requestedNextTab,
-      this._lastSelectedTabIndex, this._selectedTabAnimation)
-      : super(repaint: _animation) {
-    swipeArcPath = Path();
-    swipeArcPaint = Paint();
-    swipeArcPaint.style = PaintingStyle.fill;
-    swipeArcPaint.color = Colors.white;
-    swipeArcPaint.strokeWidth = 1;
-    swipeArcPaint.isAntiAlias = true;
-    swipeArcPaint.maskFilter = MaskFilter.blur(BlurStyle.solid, 1.3);
-
-    selectedRightArcPath = Path();
-    selectedRightArcPaint = Paint();
-    selectedRightArcPaint.style = PaintingStyle.stroke;
-    selectedRightArcPaint.color = Colors.pink;
-    selectedRightArcPaint.strokeWidth = selectedArcStrokeWidth;
-    selectedRightArcPaint.isAntiAlias = true;
-
-    _reverseSelectedTabAnimation = ReverseAnimation(_selectedTabAnimation);
-  }
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    swipeArcPath.reset();
-    selectedRightArcPath.reset();
-    //TODO introduce a scaling factor to middle control point of bezier curve to make curve constitent across all device screen
-
-    double outerControlPointY =
-        (_curveHeightScale - this._animation.value) * size.height;
-    double middleControlPointY =
-        (_curveFocalControlPointHeightScale - this._animation.value) *
-            size.height;
-
-    swipeArcPath.moveTo(0, outerControlPointY);
-    swipeArcPath.cubicTo(0, outerControlPointY, size.width * .5,
-        middleControlPointY, size.width, outerControlPointY);
-    swipeArcPath.lineTo(size.width, size.height);
-    swipeArcPath.lineTo(0, size.height);
-    swipeArcPath.close();
-
-    canvas.drawPath(swipeArcPath, swipeArcPaint);
-
-    if (_requestedNextTab != SELECTED_TAB.NONE) {
-      //TODO currently selected arc offset is fixed, later it should be derived from its paint stroke width.
-      selectedRightArcPath.moveTo(-2, outerControlPointY - 4);
-      selectedRightArcPath.cubicTo(
-          -2,
-          outerControlPointY - 4,
-          (size.width + 4) * .5,
-          middleControlPointY - 4,
-          size.width + 2,
-          outerControlPointY - 4);
-
-      if (_requestedNextTab == SELECTED_TAB.RIGHT) {
-        if (_lastSelectedTabIndex == SELECTED_TAB.LEFT) {
-          canvas.clipRect(
-              Rect.fromLTRB(size.width * .5 * _selectedTabAnimation.value, 0,
-                  size.width * .5+(_selectedTabAnimation.value*(.5*size.width))
-                  , outerControlPointY),
-              doAntiAlias: true);
-        } else {
-          canvas.clipRect(
-              Rect.fromLTRB( size.width - (size.width * 0.5 * _selectedTabAnimation.value), 0,
-                  size.width, outerControlPointY),
-              doAntiAlias: true);
-        }
-      } else {
-        if (_lastSelectedTabIndex == SELECTED_TAB.RIGHT) {
-          canvas.clipRect(
-              Rect.fromLTRB(
-                  size.width * .5 * _reverseSelectedTabAnimation.value,
-                  0,
-                  size.width - (size.width * 0.5 * _selectedTabAnimation.value),
-                  outerControlPointY),
-              doAntiAlias: true);
-        } else {
-          canvas.clipRect(
-              Rect.fromLTRB(0, 0, size.width * .5 * _selectedTabAnimation.value,
-                  outerControlPointY),
-              doAntiAlias: true);
-        }
-      }
-      canvas.drawPath(selectedRightArcPath, selectedRightArcPaint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
-
-  @override
-  bool shouldRebuildSemantics(CustomPainter oldDelegate) => false;
-}
-
-enum SELECTED_TAB { RIGHT, LEFT, NONE }
