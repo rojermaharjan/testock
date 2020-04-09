@@ -7,7 +7,11 @@ class OnBoarding extends StatefulWidget {
     return _OnBoardingState();
   }
 }
-
+/**
+ * The idea for this onboarding process is two break it into two scene.
+ * 1) Intially the promo of app is shown as scene one.
+ * 2) When user swipe from bottom, scene two is loaded with two tabs i.e (Login, Signup)
+ */
 class _OnBoardingState extends State<StatefulWidget>
     with TickerProviderStateMixin {
   AnimationController _onboardingAnimationController;
@@ -46,7 +50,7 @@ class _OnBoardingState extends State<StatefulWidget>
     _curveExpansionAnimation =
         Tween<double>(begin: 0, end: _curveExpansionEndValue).animate(
             CurvedAnimation(
-                curve: Curves.elasticInOut,
+                curve: Curves.elasticOut,
                 parent: _onboardingAnimationController));
 
     _tabSelectedAnimationController = AnimationController(
@@ -132,7 +136,7 @@ class _OnBoardingState extends State<StatefulWidget>
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Padding(
-                    padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                    padding: EdgeInsets.fromLTRB(0, 70, 0, 0),
                     child: Opacity(
                         opacity: _onboardingAnimationController.value,
                         child: Text(
@@ -152,7 +156,7 @@ class _OnBoardingState extends State<StatefulWidget>
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Padding(
-                    padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                    padding: EdgeInsets.fromLTRB(0, 70, 0, 0),
                     child: Opacity(
                         opacity: _onboardingAnimationController.value,
                         child: Text(
@@ -182,7 +186,7 @@ class _OnBoardingState extends State<StatefulWidget>
 class SwipableArc extends CustomPainter {
   final Animation<double> _animation;
   double _curveHeightScale = .6;
-  double _curveFocalControlPointHeightScale = .40;
+  double _curveFocalControlPointHeightScale = .5;
 
   double selectedArcStrokeWidth = 8;
 
