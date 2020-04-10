@@ -3,18 +3,22 @@ import 'package:flutter/widgets.dart';
 
 class SwipableArc extends CustomPainter {
   final Animation<double> _animation;
-  double _curveHeightScale = .8;
-  double _curveFocalControlPointHeightScale = .7;
+  double _initialCurveYOffset;
+
+  double _curveMidYOffset;
 
   double selectedArcStrokeWidth = 8;
 
   Paint swipeArcPaint;
   Path swipeArcPath;
 
+  Paint swipeArcBorderPaint;
+  Path swipeArcBorderPath;
+
   Paint selectedLeftArcPaint;
 
-  Paint selectedRightArcPaint;
-  Path selectedRightArcPath;
+  Paint selectedArcPaint;
+  Path selectedArcPath;
 
   SELECTED_TAB _requestedNextTab;
   SELECTED_TAB _lastSelectedTabIndex;
@@ -22,39 +26,53 @@ class SwipableArc extends CustomPainter {
   Animation<double> _selectedTabAnimation;
   Animation<double> _reverseSelectedTabAnimation;
 
-  SwipableArc(this._animation, this._requestedNextTab,
-      this._lastSelectedTabIndex, this._selectedTabAnimation)
+  SwipableArc(
+      this._animation,
+      this._initialCurveYOffset,
+      this._requestedNextTab,
+      this._lastSelectedTabIndex,
+      this._selectedTabAnimation)
       : super(repaint: _animation) {
+    this._curveMidYOffset = this._initialCurveYOffset - .1;
+
+    swipeArcBorderPath = Path();
+    swipeArcBorderPaint = Paint();
+    swipeArcBorderPaint.style = PaintingStyle.stroke;
+    swipeArcBorderPaint.color = Colors.grey.shade500;
+    swipeArcBorderPaint.strokeWidth = 1.5;
+    swipeArcBorderPaint.isAntiAlias = true;
+    swipeArcBorderPaint.maskFilter = MaskFilter.blur(BlurStyle.inner, 5);
+
     swipeArcPath = Path();
     swipeArcPaint = Paint();
     swipeArcPaint.style = PaintingStyle.fill;
     swipeArcPaint.color = Colors.white;
     swipeArcPaint.strokeWidth = 1;
     swipeArcPaint.isAntiAlias = true;
-    swipeArcPaint.maskFilter = MaskFilter.blur(BlurStyle.solid, 1.3);
+//    swipeArcPaint.maskFilter = MaskFilter.blur(BlurStyle.inner, 1);
 
-    selectedRightArcPath = Path();
-    selectedRightArcPaint = Paint();
-    selectedRightArcPaint.style = PaintingStyle.stroke;
-    selectedRightArcPaint.color = Colors.pink;
-    selectedRightArcPaint.strokeWidth = selectedArcStrokeWidth;
-    selectedRightArcPaint.isAntiAlias = true;
+    selectedArcPath = Path();
+    selectedArcPaint = Paint();
+    selectedArcPaint.style = PaintingStyle.stroke;
+    selectedArcPaint.color = Colors.pink;
+    selectedArcPaint.strokeWidth = selectedArcStrokeWidth;
+    selectedArcPaint.isAntiAlias = true;
 
     _reverseSelectedTabAnimation = ReverseAnimation(_selectedTabAnimation);
   }
 
   @override
   void paint(Canvas canvas, Size size) {
+    swipeArcBorderPath.reset();
     swipeArcPath.reset();
-    selectedRightArcPath.reset();
+    selectedArcPath.reset();
 
     //TODO introduce a scaling factor to middle control point of bezier curve to make curve constitent across all device screen
 
     double outerControlPointY =
-        (_curveHeightScale - this._animation.value) * size.height;
+        (_initialCurveYOffset - this._animation.value) * size.height;
     double middleControlPointY =
-        (_curveFocalControlPointHeightScale - this._animation.value) *
-            size.height;
+        (_curveMidYOffset - this._animation.value) * size.height;
 
     swipeArcPath.moveTo(0, outerControlPointY);
     swipeArcPath.cubicTo(0, outerControlPointY, size.width * .5,
@@ -65,16 +83,18 @@ class SwipableArc extends CustomPainter {
 
     canvas.drawPath(swipeArcPath, swipeArcPaint);
 
+    swipeArcBorderPath.moveTo(0, outerControlPointY);
+    swipeArcBorderPath.cubicTo(0, outerControlPointY, size.width * .5,
+        middleControlPointY, size.width, outerControlPointY);
+
+
+    canvas.drawPath(swipeArcBorderPath, swipeArcBorderPaint);
+
     if (_requestedNextTab != SELECTED_TAB.NONE) {
       //TODO currently selected arc offset is fixed, later it should be derived from its paint stroke width.
-      selectedRightArcPath.moveTo(-2, outerControlPointY - 4);
-      selectedRightArcPath.cubicTo(
-          -2,
-          outerControlPointY - 4,
-          (size.width + 4) * .5,
-          middleControlPointY - 4,
-          size.width + 2,
-          outerControlPointY - 4);
+      selectedArcPath.moveTo(-2, outerControlPointY - 4);
+      selectedArcPath.cubicTo(-2, outerControlPointY - 4, (size.width + 4) * .5,
+          middleControlPointY - 4, size.width + 2, outerControlPointY - 4);
 
       if (_requestedNextTab == SELECTED_TAB.RIGHT) {
         if (_lastSelectedTabIndex == SELECTED_TAB.LEFT) {
@@ -111,7 +131,7 @@ class SwipableArc extends CustomPainter {
               doAntiAlias: true);
         }
       }
-      canvas.drawPath(selectedRightArcPath, selectedRightArcPaint);
+      canvas.drawPath(selectedArcPath, selectedArcPaint);
     }
   }
 

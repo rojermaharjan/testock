@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:testockmbl/common/widget/swippable_arc_bg.dart';
 
 class OnBoarding extends StatefulWidget {
+
   @override
   State<StatefulWidget> createState() {
     return _OnBoardingState();
@@ -18,18 +19,35 @@ class _OnBoardingState extends State<StatefulWidget>
     with TickerProviderStateMixin {
   AnimationController _onboardingAnimationSceneController;
   Animation _swippableCurveAnimation;
-  final double _swippableCurveTopOffsetRelativeToScreen = .6;
+   double _swippableCurveFinalTopOffsetRelativeToScreen = .7;
+  final double _swippableCurveInitialTopOffsetRelativeToScreen = .9;
 
   AnimationController _tabSelectedAnimationController;
   Animation<double> _tabSelectionAnimation;
   SELECTED_TAB _lastSelectedTab;
   SELECTED_TAB _requestedTabIndex;
 
-  static final int ONBOARDING_SCENE_ANIM_DURATION=1400;
+
+  static final int ONBOARDING_SCENE_ANIM_DURATION = 800;
+
+  static final double TAB_HEADER_HEIGHT=90;
+
+
 
   @override
   Widget build(BuildContext context) {
-    return _getJhonnyVinoOnBoardingScreen();
+    double windowHeight=MediaQuery.of(context).size.height*MediaQuery.of(context).devicePixelRatio;
+    double tabHeight=(MediaQuery.of(context).devicePixelRatio)*TAB_HEADER_HEIGHT;
+
+    _swippableCurveFinalTopOffsetRelativeToScreen=(1-(tabHeight)/windowHeight)-.15;
+        print("Final offset value : $_swippableCurveFinalTopOffsetRelativeToScreen");
+
+    _swippableCurveAnimation = Tween<double>(
+        begin: 0, end: _swippableCurveFinalTopOffsetRelativeToScreen)
+        .animate(CurvedAnimation(
+        curve: Curves.easeOutCirc,
+        parent: _onboardingAnimationSceneController));
+    return _getJhonnyVinoOnBoardingScreen(context);
   }
 
   @override
@@ -40,11 +58,8 @@ class _OnBoardingState extends State<StatefulWidget>
       vsync: this,
       duration: Duration(milliseconds: ONBOARDING_SCENE_ANIM_DURATION),
     );
-    _swippableCurveAnimation =
-        Tween<double>(begin: 0, end: _swippableCurveTopOffsetRelativeToScreen)
-            .animate(CurvedAnimation(
-                curve: Curves.elasticOut,
-                parent: _onboardingAnimationSceneController));
+
+
 
     _requestedTabIndex = SELECTED_TAB.NONE;
     _lastSelectedTab = SELECTED_TAB.NONE;
@@ -74,17 +89,21 @@ class _OnBoardingState extends State<StatefulWidget>
     }
   }
 
-  Widget _getJhonnyVinoOnBoardingScreen() {
+  Widget _getJhonnyVinoOnBoardingScreen(BuildContext context) {
     return Stack(
       children: <Widget>[
         Container(
             height: double.infinity,
             width: double.infinity,
             child: CustomPaint(
-              painter: SwipableArc(_swippableCurveAnimation, _requestedTabIndex,
-                  _lastSelectedTab, _tabSelectionAnimation),
+              painter: SwipableArc(
+                  _swippableCurveAnimation,
+                  _swippableCurveInitialTopOffsetRelativeToScreen,
+                  _requestedTabIndex,
+                  _lastSelectedTab,
+                  _tabSelectionAnimation),
             )),
-        _getHeaderLoginRegisterView(),
+        _getTabHeaderView(),
         _getCurrentSelectedTabContent(),
         Align(
             alignment: Alignment.bottomCenter,
@@ -108,6 +127,7 @@ class _OnBoardingState extends State<StatefulWidget>
     );
   }
 
+
   void onLoginBtnPressed() {}
 
   void onRegisterBtnPressed() {}
@@ -116,6 +136,7 @@ class _OnBoardingState extends State<StatefulWidget>
    * Load second scene and pre-select tab first
    */
   void _startTransitionFromFirstScene() {
+
     _onboardingAnimationSceneController.addListener(() {
       setState(() {});
     });
@@ -130,7 +151,7 @@ class _OnBoardingState extends State<StatefulWidget>
     _onboardingAnimationSceneController.forward(from: 0);
   }
 
-  Widget _getHeaderLoginRegisterView() {
+  Widget _getTabHeaderView() {
     return AnimatedBuilder(
       animation: _onboardingAnimationSceneController,
       builder: (context, builder) {
@@ -139,49 +160,40 @@ class _OnBoardingState extends State<StatefulWidget>
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Expanded(
-                child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () => _onTabSelected(SELECTED_TAB.LEFT),
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                    padding: EdgeInsets.fromLTRB(0, 70, 0, 0),
-                    child: Opacity(
-                        opacity: _onboardingAnimationSceneController.value,
-                        child: Text(
-                          'Login',
-                          style: TextStyle(
-                              fontSize: 23,
-                              fontFamily: 'Lalezar',
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white),
-                        ))),
-              ),
-            )),
-            Expanded(
-                child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () => _onTabSelected(SELECTED_TAB.RIGHT),
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                    padding: EdgeInsets.fromLTRB(0, 70, 0, 0),
-                    child: Opacity(
-                        opacity: _onboardingAnimationSceneController.value,
-                        child: Text(
-                          'SignUp',
-                          style: TextStyle(
-                              fontSize: 23,
-                              fontFamily: 'Lalezar',
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white),
-                        ))),
-              ),
-            )),
+            _createTab("Login", () => _onTabSelected(SELECTED_TAB.LEFT),
+                Colors.orange),
+            _createTab("Signup", () => _onTabSelected(SELECTED_TAB.RIGHT),
+                Colors.green),
           ],
         );
       },
+    );
+  }
+
+  _createTab(String tabName, VoidCallback onTabCallback, Color color) {
+    return Expanded(
+      child: Container(
+        height: TAB_HEADER_HEIGHT,
+        child:
+        InkWell(
+          onTap: (){onTabCallback();},
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
+                child: Opacity(
+                    opacity: _onboardingAnimationSceneController.value,
+                    child: Text(
+                      tabName,
+                      style: TextStyle(
+                          fontSize: 23,
+                          fontFamily: 'Lalezar',
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white),
+                    ))),
+          ),
+        ),
+      ),
     );
   }
 
@@ -208,4 +220,6 @@ class _OnBoardingState extends State<StatefulWidget>
           )),
     );
   }
+
+
 }
