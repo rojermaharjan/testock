@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:testockmbl/common/widget/swippable_arc_bg.dart';
 
 class OnBoarding extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() {
     return _OnBoardingState();
@@ -19,7 +18,7 @@ class _OnBoardingState extends State<StatefulWidget>
     with TickerProviderStateMixin {
   AnimationController _onboardingAnimationSceneController;
   Animation _swippableCurveAnimation;
-   double _swippableCurveFinalTopOffsetRelativeToScreen = .7;
+  double _swippableCurveFinalTopOffsetRelativeToScreen = .7;
   final double _swippableCurveInitialTopOffsetRelativeToScreen = .9;
 
   AnimationController _tabSelectedAnimationController;
@@ -27,26 +26,31 @@ class _OnBoardingState extends State<StatefulWidget>
   SELECTED_TAB _lastSelectedTab;
   SELECTED_TAB _requestedTabIndex;
 
-
   static final int ONBOARDING_SCENE_ANIM_DURATION = 800;
 
-  static final double TAB_HEADER_HEIGHT=90;
+  static final double TAB_HEADER_HEIGHT = 90;
 
-
+  final _loginFormKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    double windowHeight=MediaQuery.of(context).size.height*MediaQuery.of(context).devicePixelRatio;
-    double tabHeight=(MediaQuery.of(context).devicePixelRatio)*TAB_HEADER_HEIGHT;
+    /**
+     * TODO need to defer the position calculation and avoid during building widget process
+     */
+    double windowHeight = MediaQuery.of(context).size.height *
+        MediaQuery.of(context).devicePixelRatio;
+    double tabHeight =
+        (MediaQuery.of(context).devicePixelRatio) * TAB_HEADER_HEIGHT;
 
-    _swippableCurveFinalTopOffsetRelativeToScreen=(1-(tabHeight)/windowHeight)-.15;
-        print("Final offset value : $_swippableCurveFinalTopOffsetRelativeToScreen");
+    _swippableCurveFinalTopOffsetRelativeToScreen =
+        (1 - (tabHeight) / windowHeight) - .15;
 
     _swippableCurveAnimation = Tween<double>(
-        begin: 0, end: _swippableCurveFinalTopOffsetRelativeToScreen)
+            begin: 0, end: _swippableCurveFinalTopOffsetRelativeToScreen)
         .animate(CurvedAnimation(
-        curve: Curves.easeOutCirc,
-        parent: _onboardingAnimationSceneController));
+            curve: Curves.easeOutCirc,
+            parent: _onboardingAnimationSceneController));
+
     return _getJhonnyVinoOnBoardingScreen(context);
   }
 
@@ -58,8 +62,6 @@ class _OnBoardingState extends State<StatefulWidget>
       vsync: this,
       duration: Duration(milliseconds: ONBOARDING_SCENE_ANIM_DURATION),
     );
-
-
 
     _requestedTabIndex = SELECTED_TAB.NONE;
     _lastSelectedTab = SELECTED_TAB.NONE;
@@ -95,6 +97,7 @@ class _OnBoardingState extends State<StatefulWidget>
         Container(
             height: double.infinity,
             width: double.infinity,
+            decoration: backgroundDecoration,
             child: CustomPaint(
               painter: SwipableArc(
                   _swippableCurveAnimation,
@@ -105,28 +108,65 @@ class _OnBoardingState extends State<StatefulWidget>
             )),
         _getTabHeaderView(),
         _getCurrentSelectedTabContent(),
-        Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-                padding: EdgeInsets.all(10),
-                child: FlatButton(
-                    onPressed: this._startTransitionFromFirstScene,
-                    color: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        side: BorderSide(color: Colors.black)),
-                    child: Text(
-                      'Swipe',
-                      style: TextStyle(
-                          fontSize: 17,
-                          fontFamily: 'Lalezar',
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black),
-                    )))),
+
       ],
     );
   }
 
+  Widget getLoginForm() {
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight =
+        MediaQuery.of(context).size.height - TAB_HEADER_HEIGHT - 50;
+    return Positioned(
+        top: TAB_HEADER_HEIGHT + 50,
+        child: Container(
+          width: deviceWidth,
+          height: deviceHeight,
+          child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Form(
+                key: _loginFormKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        hintText: 'Enter your email',
+                      ),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        return null;
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: FlatButton(
+                          onPressed: () {
+                            if (_loginFormKey.currentState.validate()) {
+                              // Process data.
+                            }
+                          },
+                          color: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              side: BorderSide(color: Colors.black)),
+                          child: Text(
+                            'Login',
+                            style: TextStyle(
+                                fontSize: 17,
+                                fontFamily: 'Lalezar',
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black),
+                          )),
+                    ),
+                  ],
+                ),
+              )),
+        ));
+  }
 
   void onLoginBtnPressed() {}
 
@@ -136,7 +176,6 @@ class _OnBoardingState extends State<StatefulWidget>
    * Load second scene and pre-select tab first
    */
   void _startTransitionFromFirstScene() {
-
     _onboardingAnimationSceneController.addListener(() {
       setState(() {});
     });
@@ -174,9 +213,10 @@ class _OnBoardingState extends State<StatefulWidget>
     return Expanded(
       child: Container(
         height: TAB_HEADER_HEIGHT,
-        child:
-        InkWell(
-          onTap: (){onTabCallback();},
+        child: InkWell(
+          onTap: () {
+            onTabCallback();
+          },
           child: Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
@@ -202,9 +242,26 @@ class _OnBoardingState extends State<StatefulWidget>
     if (_requestedTabIndex == SELECTED_TAB.RIGHT) {
       selectedTab = "REGISTER";
     } else if (_requestedTabIndex == SELECTED_TAB.LEFT) {
-      selectedTab = "LOGIN";
+      return getLoginForm();
     } else {
-      selectedTab = "ONBOARDING";
+     return Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+              padding: EdgeInsets.all(10),
+              child: FlatButton(
+                  onPressed: this._startTransitionFromFirstScene,
+                  color: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      side: BorderSide(color: Colors.black)),
+                  child: Text(
+                    'Swipe',
+                    style: TextStyle(
+                        fontSize: 17,
+                        fontFamily: 'Lalezar',
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black),
+                  ))));
     }
     return Align(
       alignment: Alignment.center,
@@ -220,6 +277,8 @@ class _OnBoardingState extends State<StatefulWidget>
           )),
     );
   }
-
-
 }
+
+const backgroundDecoration = BoxDecoration(
+//  color: Color.fromRGBO(1, 95, 183, 1)
+    color: Color.fromRGBO(72, 32, 232, 1));
