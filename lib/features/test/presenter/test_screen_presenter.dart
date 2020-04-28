@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:math';
 
+import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:testockmbl/base/base_events.dart';
 import 'package:testockmbl/features/test/model/question_models.dart';
@@ -19,21 +21,44 @@ class TestScreenPresenter {
   bool _hasProvidedFeedback;
 
   TestScreenPresenter() {
-    _questionList = getDummyQuestions();
+//    _questionList = getDummyQuestions();
     _questionIndex = 0;
-    _questionBloc =
-        new BaseBehaviorBloc.withInitialData(_questionList[_questionIndex]);
     _questionEventBloc = new BaseBehaviorBloc.withInitialData(
-        QuestionEvent.NEW_QUESTION_ARRIVED);
+        QuestionEvent.LOADING);
     _answerEventBloc = new PublishSubject();
     _summaryEventBloc = new PublishSubject();
 
     _performDefaultAction();
   }
 
+
+   getQuestions()
+  async {
+    String data = await rootBundle.loadString('assets/json/questions.json');
+
+
+    List<Question> questionList= (json.decode(data)  as List)?.map((e) =>
+      e==null?null:Question.fromJson(e as Map<String,dynamic>))
+      ?.toList();
+
+
+    questionList.shuffle(Random(5));
+
+    _questionList= questionList.sublist(0,10);
+
+
+
+
+
+    _questionBloc = new BaseBehaviorBloc.withInitialData(_questionList[_questionIndex]);
+    _questionEventBloc.updateState(QuestionEvent.NEW_QUESTION_ARRIVED);
+
+    _feedbackQuestionIndex = _questionList.length;
+
+  }
+
   void _performDefaultAction() {
     //TODO update the resepective flag accrodign the chose
-    _feedbackQuestionIndex = 6;
     _hasProvidedFeedback = false;
   }
 
@@ -68,7 +93,7 @@ class TestScreenPresenter {
     //No provided feedback
     else {
       //Allow to play quiz till end of the question list
-      if (_questionIndex < _questionList.length) {
+      if (_questionIndex <= _questionList.length) {
         if (_questionIndex == _feedbackQuestionIndex)
           _showSummary();
         else {
@@ -86,14 +111,13 @@ class TestScreenPresenter {
     if (_hasProvidedFeedback)
       restartTest();
     else {
-      _questionBloc.updateState(_questionList[_questionIndex]);
-      _questionEventBloc.updateState(QuestionEvent.NEW_QUESTION_ARRIVED);
+        queryNextQuestion();
     }
   }
 
   restartTest() {
     _questionList.forEach((element) {
-      element.answerOptions.forEach((element) {
+      element.options.forEach((element) {
         element.isSelectedByUser = false;
       });
     });
@@ -117,11 +141,11 @@ class TestScreenPresenter {
   Stream<Summary> get summaryEventStream => _summaryEventBloc.stream;
 
   void onAnswerSelected(int position) {
-    AnswerOption selectedAnswer =
-        _questionBloc.getCurrentState().answerOptions[position];
+    Options selectedAnswer =
+        _questionBloc.getCurrentState().options[position];
     selectedAnswer.isSelectedByUser = true;
 
-    if (_questionBloc.getCurrentState().isQuestionOpinion)
+    if (_questionBloc.getCurrentState().isOpinion)
       _answerEventBloc.sink.add(AnswerEvent.OPINION);
     else if (selectedAnswer.isSelectedByUser && selectedAnswer.isCorrect)
       _answerEventBloc.sink.add(AnswerEvent.RIGHT_ANSWER_SELECTED);

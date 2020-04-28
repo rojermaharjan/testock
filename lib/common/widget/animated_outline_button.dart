@@ -31,7 +31,7 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
 
   int _position;
 
-  AnswerOption _currentAnswer;
+  Options _currentAnswer;
 
   Color _buttonAnimatingColor;
 
@@ -63,7 +63,7 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
                     child: Padding(
                         padding: EdgeInsets.all(14.0),
                         child: Text(
-                          _currentAnswer.answer,
+                          _currentAnswer.option,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 17,
@@ -120,10 +120,10 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
   }
 
   void onAnswerSelected() {
-    this._currentAnswer = _currentQuestion.answerOptions[_position];
+    this._currentAnswer = _currentQuestion.options[_position];
     _presenter.onAnswerSelected(_position);
     int duration=500;
-    if (!this._currentQuestion.isQuestionOpinion)
+    if (!this._currentQuestion.isOpinion)
      duration=1100;
 
 
@@ -133,7 +133,7 @@ class _AnimatedOutlineButtonState extends State<AnimatedOutlineButton>
 
   void getLatestState() {
     this._currentQuestion = _presenter.getCurrentQuestion();
-    this._currentAnswer = _currentQuestion.answerOptions[_position];
+    this._currentAnswer = _currentQuestion.options[_position];
   }
 
   @override

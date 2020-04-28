@@ -5,8 +5,11 @@ import 'package:testockmbl/common/widget/animated_typed_text.dart';
 import 'package:testockmbl/features/test/model/question_models.dart';
 import 'package:testockmbl/features/test/presenter/test_screen_presenter.dart';
 import 'package:testockmbl/features/test/view/test_summary_screen.dart';
+import 'package:testockmbl/main.dart';
 
 class TestScreen extends StatefulWidget {
+
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -26,27 +29,47 @@ class _TestScreenState extends State<StatefulWidget>
 
   @override
   Widget build(BuildContext context) {
+    Widget selectedWidget;
     switch (currentState) {
-      case QuestionEvent.LOADING:
-        return Center(
-          child: Text("Loading"),
-        );
-        break;
       case QuestionEvent.NEW_QUESTION_ARRIVED:
         _controller.forward(from: 0);
-        return _getNewQuestionWidget();
+        selectedWidget = _getNewQuestionWidget();
         break;
 
       case QuestionEvent.END_OF_QUESTION:
         _controller.forward(from: 0);
-        return _getEndOfQuestionWidget();
+        selectedWidget = _getEndOfQuestionWidget();
         break;
 
       case QuestionEvent.PROMPT_FEEDBACK:
         _controller.forward(from: 0);
-        return _getFeedbackPropmtWidget();
+        selectedWidget = _getFeedbackPropmtWidget();
+        break;
+      default:
+        selectedWidget = Center(
+          child: Text("Loading...",
+              style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white),
+          textAlign: TextAlign.center,
+          ),
+        );
         break;
     }
+
+    return  Scaffold(
+      body:
+      Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: backgroundDecoration,
+        child:Stack(
+          children: <Widget>[selectedWidget],
+        ) ,
+      ),
+    );
+
   }
 
   @override
@@ -70,6 +93,8 @@ class _TestScreenState extends State<StatefulWidget>
     GetIt.I<TestScreenPresenter>().summaryEventStream.listen((summary) {
       _showSummaryScreen(summary);
     });
+
+    GetIt.I<TestScreenPresenter>().getQuestions();
   }
 
   @override
@@ -189,10 +214,10 @@ class _TestScreenState extends State<StatefulWidget>
 
   Widget _getFeedbackPropmtWidget() {
     return Positioned.fill(
-        child: Align(
-            alignment: FractionalOffset(.5, .4),
-            child: SlideTransition(
-              position: _slideInAnimation,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Align(
+              alignment: FractionalOffset(.5, .3),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -235,7 +260,7 @@ class _TestScreenState extends State<StatefulWidget>
                                   fontWeight: FontWeight.w400,
                                   color: Colors.white),
                             )))
-                  ]),
-            )));
+                  ])),
+        ));
   }
 }

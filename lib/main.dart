@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:testockmbl/features/onboarding/view/onboarding.dart';
+import 'package:testockmbl/features/registration/view/registration_screen.dart';
+import 'package:testockmbl/features/test/view/test_screen.dart';
 
 // void main() => runApp(MyApp());
 void main() => runApp(MyApp());
@@ -13,6 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      initialRoute: 'Onboarding',
       title: 'Testock',
       theme: ThemeData(
         // This is the theme of your application.
@@ -37,7 +40,8 @@ class MyApp extends StatelessWidget {
             height: double.infinity,
             width: double.infinity,
             decoration: backgroundDecoration,
-            child:  Stack(children:[OnBoarding()])
+//            child:  Stack(children:[OnBoarding()])
+            child:  TestScreen(),
         ),
       )
 

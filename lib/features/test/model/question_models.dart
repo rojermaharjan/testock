@@ -1,44 +1,53 @@
 
 
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'question_models.g.dart';
+
+@JsonSerializable()
 class Question
 {
-  Question(this.question, this.answerOptions)
-  {
-    this.isQuestionOpinion=false;
-  }
-
+  Question({this.questionId,this.question, this.options,this.isOpinion});
+  String questionId;
   String question;
-  List<AnswerOption> answerOptions;
+  List<Options> options;
 
-  bool isQuestionOpinion;
+  bool isOpinion;
 
   @override
   String toString() {
-    return 'Question{question: $question, answerOptions: $answerOptions, isQuestionOpinion: $isQuestionOpinion}';
+    return 'Question{question: $question, answerOptions: $options, isQuestionOpinion: $isOpinion}';
   }
 
+  factory Question.fromJson(Map<String,dynamic> json)=>_$QuestionFromJson(json);
+
+  Map<String,dynamic> toJson()=>_$QuestionToJson(this);
 
 }
 
-class AnswerOption
+@JsonSerializable()
+class Options
 {
 
-  AnswerOption(this.answer, this.id, this.isCorrect)
-  {
-    this.isSelectedByUser=false;
-  }
+  Options({this.option, this.optionId, this.isCorrect,this.isSelectedByUser});
 
-  String answer;
-  String id;
+  String option;
+  num optionId;
   bool isCorrect;
   bool isSelectedByUser;
 
   @override
   String toString() {
-    return 'AnswerOption{answer: $answer, id: $id, isCorrect: $isCorrect, isSelectedByUser: $isSelectedByUser}';
+    return 'AnswerOption{answer: $option, id: $optionId, isCorrect: $isCorrect, isSelectedByUser: $isSelectedByUser}';
   }
+
+  factory Options.fromJson(Map<String,dynamic> json)=>_$OptionsFromJson(json);
+
+  Map<String,dynamic> toJson()=>_$OptionsToJson(this);
+
 }
 
 class Summary
@@ -57,7 +66,7 @@ class Summary
     for(int i=0;i<feedbackQuestionIndex;i++)
       {
         Question question=questionList[i];
-        for(AnswerOption ans in question.answerOptions)
+        for(Options ans in question.options)
           {
             if(ans.isSelectedByUser)
               {
@@ -84,85 +93,86 @@ class Summary
 }
 
 
-List<Question>  getDummyQuestions()
-{
-  List<Question> questions=new List();
-  
-  questions.add(Question( "Grand Central Terminal, Park Avenue, New York is the world's",[
-    AnswerOption("Largest railway station","1",true),
-    AnswerOption("Highest railway station","2",false),
-    AnswerOption("Longest railway station","2",false),
-    AnswerOption("None of the above","3",false),
-  ]));
-
-  questions.add(Question( "Entomology is the science that studies",[
-    AnswerOption("Behavior of human beings","1",true),
-    AnswerOption("Insects","2",false),
-    AnswerOption("The origin and history of technical and scientific terms","2",false),
-    AnswerOption("The formation of rocks","3",false),
-  ]));
-
-  questions.add(Question( "Eritrea, which became the 182nd member of the UN in 1993, is in the continent of",[
-    AnswerOption("Asia","1",true),
-    AnswerOption("Africa","2",false),
-    AnswerOption("Europe","2",false),
-    AnswerOption("Australia","3",false),
-  ]));
-
-  questions.add(Question( "Garampani sanctuary is located at",[
-    AnswerOption("Junagarh, Gujarat","1",true),
-    AnswerOption("Diphu, Assam","2",false),
-    AnswerOption("Kohima, Nagaland","2",false),
-    AnswerOption("Gangtok, Sikkim","3",false),
-  ]));
-
-  questions.add(Question( "For which of the following disciplines is Nobel Prize awarded?",[
-    AnswerOption("Physics and Chemistry","1",true),
-    AnswerOption("Physiology or Medicine","2",false),
-    AnswerOption("All of the above","2",false),
-    AnswerOption("Literature, Peace and Economics","3",false),
-  ]));
-
-  questions.add(Question( "Hitler party which came into power in 1933 is known as",[
-    AnswerOption("Labour Party","1",true),
-    AnswerOption("Nazi Party","2",false),
-    AnswerOption("Ku-Klux-Klan","2",false),
-    AnswerOption("Democratic Party","3",false),
-  ]));
-
-  questions.add(Question( "How do you rate this app",[
-    AnswerOption("Good","1",true),
-    AnswerOption("Nice","2",false),
-    AnswerOption("Awesome","2",false),
-    AnswerOption("Bad","3",false),
-  ])..isQuestionOpinion=true);
-
-  return questions;
-}
-
-List<Question> getFeedbackQuestions()
-{
-  List<Question> questions=new List();
-
-  questions.add(Question( "This quiz app can help you in preparation of",[
-    AnswerOption("IOE/IOM Entrace","1",true),
-    AnswerOption("CMAT Exam","2",false),
-    AnswerOption("IELTS Exam","2",false),
-    AnswerOption("None of the above","3",false),
-  ]));
-
-  questions.add(Question( "Do you find the app useful?",[
-    AnswerOption("Yes","1",true),
-    AnswerOption("No","2",false),
-    AnswerOption("May be","2",false),
-    AnswerOption("I'm not sure","3",false),
-  ])..isQuestionOpinion=true);
-
-  questions.add(Question( "Have you used any app for entrance/exam preparation?",[
-    AnswerOption("I'm using currently","1",true),
-    AnswerOption("I tried but didn't like it","2",false),
-    AnswerOption("No","2",false),
-    AnswerOption("Yes","3",false),
-  ])..isQuestionOpinion=true);
-
-}
+//List<Question>  getDummyQuestions()
+//{
+//  List<Question> questions=new List();
+//
+//  questions.add(Question("1", "Grand Central Terminal, Park Avenue, New York is the world's",[
+//    Options("Largest railway station","1",true),
+//    Options("Highest railway station","2",false),
+//    Options("Longest railway station","2",false),
+//    Options("None of the above","3",false),
+//  ]
+//  ));
+//
+//  questions.add(Question( "Entomology is the science that studies",[
+//    Options("Behavior of human beings","1",true),
+//    Options("Insects","2",false),
+//    Options("The origin and history of technical and scientific terms","2",false),
+//    Options("The formation of rocks","3",false),
+//  ]));
+//
+//  questions.add(Question( "Eritrea, which became the 182nd member of the UN in 1993, is in the continent of",[
+//    Options("Asia","1",true),
+//    Options("Africa","2",false),
+//    Options("Europe","2",false),
+//    Options("Australia","3",false),
+//  ]));
+//
+//  questions.add(Question( "Garampani sanctuary is located at",[
+//    Options("Junagarh, Gujarat","1",true),
+//    Options("Diphu, Assam","2",false),
+//    Options("Kohima, Nagaland","2",false),
+//    Options("Gangtok, Sikkim","3",false),
+//  ]));
+//
+//  questions.add(Question( "For which of the following disciplines is Nobel Prize awarded?",[
+//    Options("Physics and Chemistry","1",true),
+//    Options("Physiology or Medicine","2",false),
+//    Options("All of the above","2",false),
+//    Options("Literature, Peace and Economics","3",false),
+//  ]));
+//
+//  questions.add(Question( "Hitler party which came into power in 1933 is known as",[
+//    Options("Labour Party","1",true),
+//    Options("Nazi Party","2",false),
+//    Options("Ku-Klux-Klan","2",false),
+//    Options("Democratic Party","3",false),
+//  ]));
+//
+//  questions.add(Question( "How do you rate this app",[
+//    Options("Good","1",true),
+//    Options("Nice","2",false),
+//    Options("Awesome","2",false),
+//    Options("Bad","3",false),
+//  ])..isOpinion=true);
+//
+//  return questions;
+//}
+//
+//List<Question> getFeedbackQuestions()
+//{
+//  List<Question> questions=new List();
+//
+//  questions.add(Question( "This quiz app can help you in preparation of",[
+//    Options("IOE/IOM Entrace","1",true),
+//    Options("CMAT Exam","2",false),
+//    Options("IELTS Exam","2",false),
+//    Options("None of the above","3",false),
+//  ]));
+//
+//  questions.add(Question( "Do you find the app useful?",[
+//    Options("Yes","1",true),
+//    Options("No","2",false),
+//    Options("May be","2",false),
+//    Options("I'm not sure","3",false),
+//  ])..isOpinion=true);
+//
+//  questions.add(Question( "Have you used any app for entrance/exam preparation?",[
+//    Options("I'm using currently","1",true),
+//    Options("I tried but didn't like it","2",false),
+//    Options("No","2",false),
+//    Options("Yes","3",false),
+//  ])..isOpinion=true);
+//
+//}

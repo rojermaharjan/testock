@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:testockmbl/common/widget/swippable_arc_bg.dart';
+import 'package:testockmbl/features/test/view/test_screen.dart';
+import 'package:testockmbl/router.dart';
 
 class OnBoarding extends StatefulWidget {
   @override
@@ -19,16 +21,17 @@ class _OnBoardingState extends State<StatefulWidget>
   AnimationController _onboardingAnimationSceneController;
   Animation _swippableCurveAnimation;
   double _swippableCurveFinalTopOffsetRelativeToScreen = .7;
-  final double _swippableCurveInitialTopOffsetRelativeToScreen = .9;
+  final double _swippableCurveInitialTopOffsetRelativeToScreen = .7;
 
   AnimationController _tabSelectedAnimationController;
   Animation<double> _tabSelectionAnimation;
   SELECTED_TAB _lastSelectedTab;
   SELECTED_TAB _requestedTabIndex;
 
-  static final int ONBOARDING_SCENE_ANIM_DURATION = 800;
+  static final int ONBOARDING_SCENE_ANIM_DURATION = 350;
 
-  static final double TAB_HEADER_HEIGHT = 90;
+  static final double TAB_HEADER_HEIGHT = 185;
+  static final double TAB_HEADER_OFFSET = 50;
 
   final _loginFormKey = GlobalKey<FormState>();
 
@@ -39,17 +42,22 @@ class _OnBoardingState extends State<StatefulWidget>
      */
     double windowHeight = MediaQuery.of(context).size.height *
         MediaQuery.of(context).devicePixelRatio;
-    double tabHeight =
-        (MediaQuery.of(context).devicePixelRatio) * TAB_HEADER_HEIGHT;
+    double tabHeight = (MediaQuery.of(context).devicePixelRatio) *
+        (TAB_HEADER_HEIGHT + TAB_HEADER_OFFSET);
+
+//    _swippableCurveFinalTopOffsetRelativeToScreen =
+//        (1 - (tabHeight) / windowHeight) - .15;
 
     _swippableCurveFinalTopOffsetRelativeToScreen =
-        (1 - (tabHeight) / windowHeight) - .15;
+        (tabHeight / windowHeight) + .03;
 
     _swippableCurveAnimation = Tween<double>(
             begin: 0, end: _swippableCurveFinalTopOffsetRelativeToScreen)
         .animate(CurvedAnimation(
-            curve: Curves.easeOutCirc,
+            curve: Curves.easeOut,
             parent: _onboardingAnimationSceneController));
+
+//    return _getJhonnyVinoOnBoardingScreen(context);
 
     return _getJhonnyVinoOnBoardingScreen(context);
   }
@@ -108,38 +116,160 @@ class _OnBoardingState extends State<StatefulWidget>
             )),
         _getTabHeaderView(),
         _getCurrentSelectedTabContent(),
-
       ],
     );
   }
 
   Widget getLoginForm() {
     double deviceWidth = MediaQuery.of(context).size.width;
-    double deviceHeight =
-        MediaQuery.of(context).size.height - TAB_HEADER_HEIGHT - 50;
+    double deviceHeight = MediaQuery.of(context).size.height -
+        TAB_HEADER_HEIGHT -
+        TAB_HEADER_OFFSET;
     return Positioned(
-        top: TAB_HEADER_HEIGHT + 50,
+        top: TAB_HEADER_HEIGHT + TAB_HEADER_OFFSET,
         child: Container(
           width: deviceWidth,
           height: deviceHeight,
           child: Padding(
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
               child: Form(
                 key: _loginFormKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        hintText: 'Enter your email',
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          hintText: 'Enter your username',
+                        ),
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Please enter some text';
+                          }
+                          return null;
+                        },
                       ),
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter some text';
-                        }
-                        return null;
-                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          hintText: 'Enter your password',
+                        ),
+                        validator: (value) {
+//                          if (value.isEmpty) {
+//                            return 'Password cannot be empty';
+//                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: FlatButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MyCustomRoute(builder: (context) => TestScreen()),
+                            );
+//                            if (_loginFormKey.currentState.validate()) {
+//                              // Process data.
+//                            }
+                          },
+                          color: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              side: BorderSide(color: Colors.black)),
+                          child: Text(
+                            'Login',
+                            style: TextStyle(
+                                fontSize: 17,
+                                fontFamily: 'Lalezar',
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black),
+                          )),
+                    ),
+                  ],
+                ),
+              )),
+        ));
+  }
+
+  Widget getRegisterForm() {
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height -
+        TAB_HEADER_HEIGHT -
+        TAB_HEADER_OFFSET;
+    return Positioned(
+        top: TAB_HEADER_HEIGHT + TAB_HEADER_OFFSET,
+        child: Container(
+          width: deviceWidth,
+          height: deviceHeight,
+          child: Padding(
+              padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+              child: Form(
+                key: _loginFormKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          hintText: 'Enter your username',
+                        ),
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Please enter your name';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          hintText: 'Enter your email',
+                        ),
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Email cannot be empty';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          hintText: 'Enter your mobile',
+                        ),
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Mobile cannot be empty';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          hintText: 'Enter your password',
+                        ),
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Password cannot be empty';
+                          }
+                          return null;
+                        },
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -154,7 +284,7 @@ class _OnBoardingState extends State<StatefulWidget>
                               borderRadius: BorderRadius.circular(30),
                               side: BorderSide(color: Colors.black)),
                           child: Text(
-                            'Login',
+                            'Register',
                             style: TextStyle(
                                 fontSize: 17,
                                 fontFamily: 'Lalezar',
@@ -238,47 +368,102 @@ class _OnBoardingState extends State<StatefulWidget>
   }
 
   _getCurrentSelectedTabContent() {
-    String selectedTab = "";
     if (_requestedTabIndex == SELECTED_TAB.RIGHT) {
-      selectedTab = "REGISTER";
+      return getRegisterForm();
     } else if (_requestedTabIndex == SELECTED_TAB.LEFT) {
       return getLoginForm();
     } else {
-     return Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-              padding: EdgeInsets.all(10),
-              child: FlatButton(
-                  onPressed: this._startTransitionFromFirstScene,
-                  color: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      side: BorderSide(color: Colors.black)),
-                  child: Text(
-                    'Swipe',
-                    style: TextStyle(
-                        fontSize: 17,
-                        fontFamily: 'Lalezar',
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black),
-                  ))));
+      return AnimatedBuilder(
+          animation: _onboardingAnimationSceneController,
+          builder: (c, b) {
+            return Opacity(
+              opacity:
+                  ReverseAnimation(_onboardingAnimationSceneController).value,
+              child: Stack(
+                children: <Widget>[
+                  Align(
+                      alignment: Alignment.topCenter,
+                      child: Padding(
+                          padding: EdgeInsets.fromLTRB(10, 100, 10, 10),
+                          child: Text(
+                            'Some promo goes here!!',
+                            style: TextStyle(
+                                fontSize: 17,
+                                fontFamily: 'Lalezar',
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black),
+                          ))),
+                  Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: FlatButton(
+                              onPressed: this._startTransitionFromFirstScene,
+                              color: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  side: BorderSide(color: Colors.black)),
+                              child: Text(
+                                'Start your Journey',
+                                style: TextStyle(
+                                    fontSize: 17,
+                                    fontFamily: 'Lalezar',
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black),
+                              ))))
+                ],
+              ),
+            );
+          });
     }
-    return Align(
-      alignment: Alignment.center,
-      child: Padding(
-          padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-          child: Text(
-            selectedTab,
-            style: TextStyle(
-                fontSize: 13,
-                fontFamily: 'Lalezar',
-                fontWeight: FontWeight.w800,
-                color: Colors.black),
-          )),
-    );
   }
+
+
+//  Widget _getScrollableContent() {
+//    return Stack(
+//      children: <Widget>[
+//        Container(
+//            height: double.infinity,
+//            width: double.infinity,
+//            decoration: backgroundDecoration,
+//            child: CustomPaint(
+//              painter: SwipableArc(
+//                  _swippableCurveAnimation,
+//                  _swippableCurveInitialTopOffsetRelativeToScreen,
+//                  _requestedTabIndex,
+//                  _lastSelectedTab,
+//                  _tabSelectionAnimation),
+//            )),
+//        Column(
+//          crossAxisAlignment: CrossAxisAlignment.center,
+//          children: <Widget>[
+//            _getTabHeaderView(),
+//            Expanded(
+//              flex:1,
+//              child:SingleChildScrollView(
+//                child:
+//                Expanded(
+//                child:
+//                )
+//
+//              )
+//            )
+//          ],
+//        )
+//      ],
+//    );
+//  }
+}
+
+Widget getContainerDummy(double height, double width, Color bgColor) {
+  return Container(
+    width: width,
+    height: height,
+    decoration: BoxDecoration(color: bgColor),
+  );
 }
 
 const backgroundDecoration = BoxDecoration(
-//  color: Color.fromRGBO(1, 95, 183, 1)
-    color: Color.fromRGBO(72, 32, 232, 1));
+  color: Color.fromRGBO(55, 81, 126, 1),
+//    color: Color.fromRGBO(72, 32, 232, 1)
+);
