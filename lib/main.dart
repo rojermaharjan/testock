@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:testockmbl/features/onboarding/view/onboarding.dart';
+import 'package:testockmbl/features/onboarding/view/onboarding_v2.dart';
 import 'package:testockmbl/features/registration/view/registration_screen.dart';
 import 'package:testockmbl/features/test/view/test_screen.dart';
 
@@ -41,7 +42,7 @@ class MyApp extends StatelessWidget {
             width: double.infinity,
             decoration: backgroundDecoration,
 //            child:  Stack(children:[OnBoarding()])
-            child:  TestScreen(),
+            child:  OnBoardingV2(),
         ),
       )
 
