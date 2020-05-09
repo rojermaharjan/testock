@@ -51,10 +51,7 @@ class OnBoardingV2State extends State<OnBoardingV2>
           MediaQuery.of(context).size.height),
       Align(
         alignment: Alignment.center,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(0,0,10,0),
-          child: RegistrationScreen(),
-        ),
+        child: RegistrationScreen(),
       )
     ];
   }
