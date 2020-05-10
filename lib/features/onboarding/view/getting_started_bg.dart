@@ -26,7 +26,7 @@ class GettingStartedContainerState extends State<GettingStartedContainer>
 
   Animation<double> _expandAnimation;
 
-  final double INTIAL_CIRCULAR_REVELAR_RADIUS = 35;
+  final double INTIAL_CIRCULAR_REVELAR_RADIUS = 50;
 
    double screenHeight;
 
@@ -63,12 +63,12 @@ class GettingStartedContainerState extends State<GettingStartedContainer>
     });
 
     _expandAnimationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 600));
+        AnimationController(vsync: this, duration: Duration(milliseconds: 800));
     _expandAnimation = Tween<double>(
             begin: _circularRevealAnimation.value,
             end: _circularRevealAnimation.value * 1.2)
         .animate(CurvedAnimation(
-            curve: Curves.easeInOut, parent: _expandAnimationController));
+            curve: Curves.elasticOut, parent: _expandAnimationController));
 
     _expandAnimationController.addListener(() {
       setState(() {});

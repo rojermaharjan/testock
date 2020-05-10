@@ -28,6 +28,7 @@ class BaseBehaviorBloc<T> {
   T _state;
 
   BaseBehaviorBloc() {
+   _event=new BehaviorSubject<T>();
   }
 
   BaseBehaviorBloc.withInitialData(T initialData) {
@@ -48,3 +49,19 @@ class BaseBehaviorBloc<T> {
     return _event.stream;
   }
 }
+
+class UseCaseEvent<T> {
+  T _data;
+  String _message;
+  UseCaseStatus _useCaseStatus;
+
+  UseCaseEvent(this._data, this._useCaseStatus, this._message);
+
+  UseCaseStatus get useCaseStatus => _useCaseStatus;
+
+  T get data => _data;
+
+  String get message => _message;
+}
+
+enum UseCaseStatus { LOADING, SUCCESS, FAILED }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testockmbl/features/onboarding/view/onboarding.dart';
 import 'package:testockmbl/features/onboarding/view/onboarding_v2.dart';
 import 'package:testockmbl/features/registration/view/registration_screen.dart';
+import 'package:testockmbl/features/splash/splash_screen.dart';
 import 'package:testockmbl/features/test/view/test_screen.dart';
 
 // void main() => runApp(MyApp());
@@ -11,7 +13,7 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
-  double _viewPortHeight;
+
 
   @override
   Widget build(BuildContext context) {
@@ -42,20 +44,50 @@ class MyApp extends StatelessWidget {
             width: double.infinity,
             decoration: backgroundDecoration,
 //            child:  Stack(children:[OnBoarding()])
-            child:  OnBoardingV2(),
+            child:  getDefaultScreen(),
         ),
       )
 
 
     );
   }
+
+  getDefaultScreen() {
+    return FutureBuilder(
+      future: _isUserLoggedIn(),
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        print("Future builder clousre called");
+        print(snapshot.hasData);
+        if (snapshot.hasData) {
+          {
+            if(snapshot.data)
+              return TestScreen();
+            else
+              return OnBoardingV2();
+          }
+        }
+        else
+          return OnBoardingV2(); // or some other widget
+      },
+    );
+
+
+  }
+
+  Future<bool> _isUserLoggedIn() async{
+    SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
+    return sharedPrefs.getBool("prefIsUserLoggedIn");
+  }
+
 }
 
 const backgroundDecoration = BoxDecoration(
   gradient: LinearGradient(
     colors: [
-      Color.fromRGBO(55, 81, 126, 1),
-      Color.fromRGBO(232, 148, 173, 1),
+//      Color.fromRGBO(55, 81, 126, 1),
+//      Color.fromRGBO(232, 148, 173, 1),
+      Color.fromRGBO(242, 204, 143, 1),
+      Color.fromRGBO(244, 172, 183, 1),
     ],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,

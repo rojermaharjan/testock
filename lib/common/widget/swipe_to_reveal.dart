@@ -30,7 +30,8 @@ class SwipeToReveal extends CustomPainter {
 
     swipeArcPaint = Paint()
       ..style = PaintingStyle.fill
-      ..color = Color.fromRGBO(247, 255, 247, 1)
+//      ..color = Color.fromRGBO(247, 255, 247, 1)
+      ..color = Colors.grey.shade50
       ..strokeWidth = 1
       ..isAntiAlias = true;
   }
