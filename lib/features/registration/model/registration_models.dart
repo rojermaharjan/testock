@@ -30,7 +30,7 @@ class RegisterModel {
 
   String appId;
 
-  String version;
+  int version;
 
 
   RegisterModel({this.lastLoginAt, this.signupAt, this.emailVerified,

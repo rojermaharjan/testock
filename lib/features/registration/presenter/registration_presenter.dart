@@ -47,6 +47,7 @@ class RegistrationScreenPresenter {
            });
 
     } catch (e) {
+      print(e.runtimeType);
       _registerEventBloc
           .updateState(UseCaseEvent(null, UseCaseStatus.FAILED, e.toString()));
     }
