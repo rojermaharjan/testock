@@ -7,12 +7,15 @@ class GettingStartedContainer extends StatefulWidget {
 
   final double _screenHeight;
 
-  GettingStartedContainer(this.animationController,this._screenHeight);
+  final ANIMATION_STATUS currentSceneState;
+
+
+  GettingStartedContainer(this.animationController,this._screenHeight,this.currentSceneState);
 
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return GettingStartedContainerState(animationController,_screenHeight);
+    return GettingStartedContainerState(animationController,_screenHeight,currentSceneState);
   }
 }
 
@@ -30,7 +33,7 @@ class GettingStartedContainerState extends State<GettingStartedContainer>
 
    double screenHeight;
 
-  GettingStartedContainerState(this.animationController, this.screenHeight){
+  GettingStartedContainerState(this.animationController, this.screenHeight,this.currentSceneState){
     this.screenHeight=.2*this.screenHeight+this.screenHeight;
   }
 
@@ -40,25 +43,31 @@ class GettingStartedContainerState extends State<GettingStartedContainer>
   void initState() {
     super.initState();
 
-    this.currentSceneState = ANIMATION_STATUS.IDLE;
+//    this.currentSceneState = ANIMATION_STATUS.INITIAL;
     _circularRevealAnimation =
         Tween<double>(begin: INTIAL_CIRCULAR_REVELAR_RADIUS, end: screenHeight)
             .animate(animationController);
 
-    _circularRevealAnimation.addStatusListener((status) {
-      switch (status) {
-        case AnimationStatus.forward:
-          this.currentSceneState = ANIMATION_STATUS.PLAYING;
-          break;
+//    _circularRevealAnimation.addStatusListener((status) {
+//      switch (status) {
+//        case AnimationStatus.forward:
+//          this.currentSceneState = ANIMATION_STATUS.REVEALING;
+//          break;
+//
+//        case AnimationStatus.completed:
+//          this.currentSceneState = ANIMATION_STATUS.FINISHED;
+//          break;
+//
+//        default:
+//          this.currentSceneState = ANIMATION_STATUS.INITIAL;
+//          break;
+//      }
+//      _expandAnimationController.stop();
+//    });
 
-        case AnimationStatus.completed:
-          this.currentSceneState = ANIMATION_STATUS.FINISHED;
-          break;
 
-        default:
-          this.currentSceneState = ANIMATION_STATUS.IDLE;
-          break;
-      }
+    _circularRevealAnimation.addListener(() {
+      this.currentSceneState=ANIMATION_STATUS.REVEALING;
       _expandAnimationController.stop();
     });
 
@@ -74,19 +83,20 @@ class GettingStartedContainerState extends State<GettingStartedContainer>
       setState(() {});
     });
 
-    if (currentSceneState == ANIMATION_STATUS.IDLE) {
+    if (currentSceneState == ANIMATION_STATUS.INITIAL) {
       _expandAnimationController.repeat(reverse: true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (currentSceneState != ANIMATION_STATUS.IDLE)
+    STATE state=(currentSceneState==ANIMATION_STATUS.INITIAL)?STATE.INITIAL:STATE.RESTING;
+    if (currentSceneState != ANIMATION_STATUS.INITIAL)
       return Container(
           height: double.infinity,
           width: double.infinity,
           child: CustomPaint(
-            painter: SwipeToReveal(animatedRadius: _circularRevealAnimation),
+            painter: SwipeToReveal(animatedRadius: _circularRevealAnimation,state: state),
           ));
     else {
       Stack stack = Stack(
@@ -98,7 +108,7 @@ class GettingStartedContainerState extends State<GettingStartedContainer>
                     height: double.infinity,
                     width: double.infinity,
                     child: CustomPaint(
-                      painter: SwipeToReveal(animatedRadius: _expandAnimation),
+                      painter: SwipeToReveal(animatedRadius: _expandAnimation,state: state),
                     ));
               }),
           Align(
@@ -108,7 +118,7 @@ class GettingStartedContainerState extends State<GettingStartedContainer>
                 width: _circularRevealAnimation.value,
                 child: GestureDetector(
                   onTap: () {
-                    animationController.forward();
+                    animationController.forward(from:animationController.value);
                   },
                 ),
               ))
@@ -135,4 +145,4 @@ class GettingStartedContainerState extends State<GettingStartedContainer>
   }
 }
 
-enum ANIMATION_STATUS { IDLE, PLAYING, FINISHED }
+enum ANIMATION_STATUS { INITIAL, REVEALING, FINISHED }

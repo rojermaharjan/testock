@@ -13,6 +13,9 @@ class OnBoardingV2State extends State<OnBoardingV2>
     with TickerProviderStateMixin {
   AnimationController _onBoardingToRegistrationSceneController;
 
+  AnimationController _titleFadeInAnimationController;
+
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -32,12 +35,13 @@ class OnBoardingV2State extends State<OnBoardingV2>
   void initState() {
     super.initState();
     initOnBoradingToRegistrationScene();
+    _titleFadeInAnimationController.forward(from: 0);
   }
-
 
   @override
   void dispose() {
     _onBoardingToRegistrationSceneController.dispose();
+    _titleFadeInAnimationController.dispose();
     super.dispose();
   }
 
@@ -47,15 +51,26 @@ class OnBoardingV2State extends State<OnBoardingV2>
       duration: Duration(milliseconds: 400),
     );
 
+    _titleFadeInAnimationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 650));
+
+
+
     _onBoardingToRegistrationSceneController.addListener(() {
       setState(() {});
     });
+
+
+    _titleFadeInAnimationController.addListener(() {
+      setState(() {});
+    });
+
   }
 
   List<Widget> getRegistrationRelatedScreens() {
     return <Widget>[
       GettingStartedContainer(_onBoardingToRegistrationSceneController,
-          MediaQuery.of(context).size.height),
+          MediaQuery.of(context).size.height,ANIMATION_STATUS.FINISHED),
       Align(
         alignment: Alignment.center,
         child: RegistrationScreen(),
@@ -63,10 +78,8 @@ class OnBoardingV2State extends State<OnBoardingV2>
     ];
   }
 
-
   List<Widget> getOnBoardingRelatedScreens() {
     return <Widget>[
-
       Container(
           height: double.infinity,
           width: double.infinity,
@@ -77,27 +90,36 @@ class OnBoardingV2State extends State<OnBoardingV2>
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text(
-                  "TestOck",
-                  style: TextStyle(
-                      fontSize: 37,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white),
-                  textAlign: TextAlign.start,
+                FadeTransition(
+                  opacity: _titleFadeInAnimationController.drive(CurveTween(curve: Curves.easeOut)),
+                  child: Text(
+                    "TestOck",
+                    style: TextStyle(
+                        fontSize: 37,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white),
+                    textAlign: TextAlign.start,
+                  ),
                 ),
-                Text(
-                  "Your learning companion",
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white),
-                  textAlign: TextAlign.start,
+                FadeTransition(
+                  opacity: _titleFadeInAnimationController.drive(CurveTween(curve: Curves.easeOut)),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0,8,0,0),
+                    child: Text(
+                      "Your learning companion",
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white),
+                      textAlign: TextAlign.start,
+                    ),
+                  ),
                 )
               ],
             ),
           )),
       GettingStartedContainer(_onBoardingToRegistrationSceneController,
-          MediaQuery.of(context).size.height),
+          MediaQuery.of(context).size.height,ANIMATION_STATUS.INITIAL),
     ];
   }
 }
