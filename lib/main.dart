@@ -86,8 +86,12 @@ const backgroundDecoration = BoxDecoration(
     colors: [
 //      Color.fromRGBO(55, 81, 126, 1),
 //      Color.fromRGBO(232, 148, 173, 1),
-      Color.fromRGBO(242, 204, 143, 1),
-      Color.fromRGBO(244, 172, 183, 1),
+
+//      Color.fromRGBO(242, 204, 143, 1),
+//      Color.fromRGBO(244, 172, 183, 1),
+
+      Color.fromRGBO(49, 104, 96,1),
+      Color.fromRGBO(113, 164, 160, 1),
     ],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,

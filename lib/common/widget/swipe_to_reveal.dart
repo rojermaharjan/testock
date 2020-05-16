@@ -6,10 +6,11 @@ class SwipeToReveal extends CustomPainter {
 
   double _radius;
 
-
   Paint swipeArcPaintReveal;
 
   STATE state;
+
+  LinearGradient gradient;
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => true;
@@ -19,17 +20,25 @@ class SwipeToReveal extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (state != STATE.INITIAL) {
+//      Rect rect = new Rect.fromCircle(
+//        center: Offset(size.width / 2, size.height + 4),
+//        radius: this._radius,
+//      );
+//
+//      swipeArcPaintReveal.shader=gradient.createShader(rect);
 
-
-    canvas.drawCircle(
-        Offset(size.width / 2, size.height+4), this._radius, state==STATE.RESTING?swipeArcPaintReveal:swipeArcPaintBounce);
+      canvas.drawCircle(Offset(size.width / 2, size.height + 4), this._radius,
+          swipeArcPaintReveal);
+    } else {
+      canvas.drawCircle(Offset(size.width / 2, size.height + 4), this._radius,
+          swipeArcPaintBounce);
+    }
   }
 
-  SwipeToReveal({Animation<double> animatedRadius,this.state})
-      : super(repaint: animatedRadius)
-  {
+  SwipeToReveal({Animation<double> animatedRadius, this.state})
+      : super(repaint: animatedRadius) {
     _radius = animatedRadius.value;
-
 
     swipeArcPaintBounce = Paint()
       ..style = PaintingStyle.fill
@@ -40,13 +49,18 @@ class SwipeToReveal extends CustomPainter {
 
     swipeArcPaintReveal = Paint()
       ..style = PaintingStyle.fill
-      ..color = Colors.yellow.shade100
+      ..color=  Color.fromRGBO(20, 51, 40,1)
       ..isAntiAlias = true;
+
+    gradient=LinearGradient(
+      colors: [
+        Color.fromRGBO(160, 196, 255,1),
+      Color.fromRGBO(255, 255,255, 1),
+      ],
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+    );
   }
-
 }
 
-enum STATE
-{
-    INITIAL,RESTING
-}
+enum STATE { INITIAL, RESTING }

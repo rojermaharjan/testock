@@ -33,9 +33,7 @@ class GettingStartedContainerState extends State<GettingStartedContainer>
 
    double screenHeight;
 
-  GettingStartedContainerState(this.animationController, this.screenHeight,this.currentSceneState){
-    this.screenHeight=.2*this.screenHeight+this.screenHeight;
-  }
+  GettingStartedContainerState(this.animationController, this.screenHeight,this.currentSceneState);
 
   Animation<double> _circularRevealAnimation;
 
@@ -43,28 +41,9 @@ class GettingStartedContainerState extends State<GettingStartedContainer>
   void initState() {
     super.initState();
 
-//    this.currentSceneState = ANIMATION_STATUS.INITIAL;
     _circularRevealAnimation =
-        Tween<double>(begin: INTIAL_CIRCULAR_REVELAR_RADIUS, end: screenHeight)
-            .animate(animationController);
-
-//    _circularRevealAnimation.addStatusListener((status) {
-//      switch (status) {
-//        case AnimationStatus.forward:
-//          this.currentSceneState = ANIMATION_STATUS.REVEALING;
-//          break;
-//
-//        case AnimationStatus.completed:
-//          this.currentSceneState = ANIMATION_STATUS.FINISHED;
-//          break;
-//
-//        default:
-//          this.currentSceneState = ANIMATION_STATUS.INITIAL;
-//          break;
-//      }
-//      _expandAnimationController.stop();
-//    });
-
+        Tween<double>(begin: INTIAL_CIRCULAR_REVELAR_RADIUS, end: 2*this.screenHeight+this.screenHeight)
+            .animate(CurvedAnimation(parent: animationController,curve: Curves.easeInQuad));
 
     _circularRevealAnimation.addListener(() {
       this.currentSceneState=ANIMATION_STATUS.REVEALING;

@@ -52,7 +52,7 @@ class OnBoardingV2State extends State<OnBoardingV2>
     );
 
     _titleFadeInAnimationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 650));
+        AnimationController(vsync: this, duration: Duration(milliseconds: 800));
 
 
 

@@ -24,7 +24,6 @@ class _RegistrationState extends State<StatefulWidget>
   String _registerPassword;
   String _registerUsername;
 
-
   String _loginEmail;
   String _loginPassword;
 
@@ -43,10 +42,9 @@ class _RegistrationState extends State<StatefulWidget>
 
   ProgressDialog pr;
 
-
   @override
   Widget build(BuildContext context) {
-    pr = new ProgressDialog(context,isDismissible: false);
+    pr = new ProgressDialog(context, isDismissible: false);
     return Padding(
       padding: const EdgeInsets.fromLTRB(15, 0, 25, 0),
       child: TabBarView(
@@ -64,7 +62,6 @@ class _RegistrationState extends State<StatefulWidget>
         RegistrationScreenPresenter());
     _registerWidgetKey = GlobalKey<FormState>();
     _loginWidgetKey = GlobalKey<FormState>();
-
 
     _tabController = new TabController(length: 2, vsync: this);
     _enterAnimationController = new AnimationController(
@@ -141,11 +138,11 @@ class _RegistrationState extends State<StatefulWidget>
                         (_slideAnimationDelayed1.value * _deviceWidth),
                     0),
                 child: Text(
-                  "Welcome To Testock",
+                  "Welcome",
                   style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.w800,
-                      color: Colors.grey.shade900),
+                      color: Colors.white),
                   textAlign: TextAlign.start,
                 ),
               ),
@@ -155,15 +152,18 @@ class _RegistrationState extends State<StatefulWidget>
                         (_slideAnimationDelayed2.value * _deviceWidth),
                     0),
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 35, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(0, 25, 0, 0),
                   child: FractionallySizedBox(
                     widthFactor: .7,
                     child: TextFormField(
+                      style: TextStyle(
+                        color: Colors.grey.shade200,
+                      ),
                       textAlign: TextAlign.start,
                       decoration: const InputDecoration(
-                        border: const OutlineInputBorder(),
-                        hintText: 'Enter your email',
-                      ),
+                          border: const OutlineInputBorder(),
+                          hintText: 'Enter your email',
+                          hintStyle: TextStyle(color: Colors.grey)),
                       onSaved: (value) {
                         this._loginEmail = value;
                       },
@@ -187,11 +187,14 @@ class _RegistrationState extends State<StatefulWidget>
                   child: FractionallySizedBox(
                     widthFactor: .7,
                     child: TextFormField(
+                      style: TextStyle(
+                        color: Colors.grey.shade200,
+                      ),
                       textAlign: TextAlign.start,
                       decoration: const InputDecoration(
-                        border: const OutlineInputBorder(),
-                        hintText: 'Enter your password',
-                      ),
+                          border: const OutlineInputBorder(),
+                          hintText: 'Enter your password',
+                          hintStyle: TextStyle(color: Colors.grey)),
                       onSaved: (value) {
                         this._loginPassword = value;
                       },
@@ -214,7 +217,6 @@ class _RegistrationState extends State<StatefulWidget>
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: FlatButton(
                       onPressed: () {
-
                         if (_loginWidgetKey.currentState.validate()) {
                           _loginWidgetKey.currentState.save();
                           GetIt.I<RegistrationScreenPresenter>()
@@ -250,7 +252,7 @@ class _RegistrationState extends State<StatefulWidget>
                     style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: Colors.grey.shade800),
+                        color: Colors.white),
                     textAlign: TextAlign.start,
                   ),
                 ),
@@ -296,18 +298,22 @@ class _RegistrationState extends State<StatefulWidget>
             style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.w800,
-                color: Colors.grey.shade900),
+                color: Colors.white),
             textAlign: TextAlign.start,
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(0, 35, 0, 0),
+            padding: const EdgeInsets.fromLTRB(0, 25, 0, 0),
             child: FractionallySizedBox(
               widthFactor: .7,
               child: TextFormField(
                 textAlign: TextAlign.start,
+                  style: TextStyle(
+                    color: Colors.grey.shade200,
+                  ),
                 decoration: const InputDecoration(
                   border: const OutlineInputBorder(),
                   hintText: 'Enter your email',
+                    hintStyle: TextStyle(color: Colors.grey)
                 ),
                 onSaved: (value) {
                   this._registerEmail = value;
@@ -329,9 +335,13 @@ class _RegistrationState extends State<StatefulWidget>
               widthFactor: .7,
               child: TextFormField(
                 textAlign: TextAlign.start,
+                  style: TextStyle(
+                    color: Colors.grey.shade200,
+                  ),
                 decoration: const InputDecoration(
                   border: const OutlineInputBorder(),
                   hintText: 'Enter your password',
+                    hintStyle: TextStyle(color: Colors.grey)
                 ),
                 onSaved: (value) {
                   this._registerPassword = value;
@@ -350,10 +360,15 @@ class _RegistrationState extends State<StatefulWidget>
             child: FractionallySizedBox(
               widthFactor: .7,
               child: TextFormField(
+                style: TextStyle(
+                  color: Colors.grey.shade200,
+                ),
+
                 textAlign: TextAlign.start,
                 decoration: const InputDecoration(
-                  border: const OutlineInputBorder(),
-                  hintText: 'Enter your username',
+                    border: const OutlineInputBorder(),
+                    hintText: 'Enter your username',
+                    hintStyle: TextStyle(color: Colors.grey)
                 ),
                 onSaved: (value) {
                   this._registerUsername = value;
@@ -373,8 +388,8 @@ class _RegistrationState extends State<StatefulWidget>
                 onPressed: () {
                   if (_registerWidgetKey.currentState.validate()) {
                     _registerWidgetKey.currentState.save();
-                    GetIt.I<RegistrationScreenPresenter>()
-                        .performRegister(_registerEmail, _registerPassword,_registerUsername);
+                    GetIt.I<RegistrationScreenPresenter>().performRegister(
+                        _registerEmail, _registerPassword, _registerUsername);
                   }
                 },
                 color: Colors.blue,
@@ -400,7 +415,7 @@ class _RegistrationState extends State<StatefulWidget>
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade800),
+                  color: Colors.white),
               textAlign: TextAlign.start,
             ),
           ),
@@ -429,15 +444,14 @@ class _RegistrationState extends State<StatefulWidget>
 
   Future<void> _handleLoginEvent(UseCaseEvent<LoginModel> loginEvent) async {
     print(loginEvent.useCaseStatus);
-    switch(loginEvent.useCaseStatus)
-    {
+    switch (loginEvent.useCaseStatus) {
       case UseCaseStatus.SUCCESS:
         pr.hide().then((isHidden) {
           Navigator.pushReplacement(
             context,
             MyCustomRoute(builder: (context) => TestScreen()),
-          );        });
-
+          );
+        });
 
         break;
 
@@ -455,16 +469,15 @@ class _RegistrationState extends State<StatefulWidget>
             timeInSecForIosWeb: 1,
             backgroundColor: Colors.red,
             textColor: Colors.white,
-            fontSize: 16.0
-        );
+            fontSize: 16.0);
 
         break;
     }
   }
 
-  Future<void> _handleRegisterEvent(UseCaseEvent<RegisterModel> registerEvent) async {
-    switch(registerEvent.useCaseStatus)
-    {
+  Future<void> _handleRegisterEvent(
+      UseCaseEvent<RegisterModel> registerEvent) async {
+    switch (registerEvent.useCaseStatus) {
       case UseCaseStatus.SUCCESS:
         await pr.hide();
         Fluttertoast.showToast(
@@ -474,8 +487,7 @@ class _RegistrationState extends State<StatefulWidget>
             timeInSecForIosWeb: 1,
             backgroundColor: Colors.red,
             textColor: Colors.white,
-            fontSize: 16.0
-        );
+            fontSize: 16.0);
         _tabController.animateTo(0, curve: Curves.elasticInOut);
         break;
 
@@ -493,8 +505,7 @@ class _RegistrationState extends State<StatefulWidget>
             timeInSecForIosWeb: 1,
             backgroundColor: Colors.red,
             textColor: Colors.white,
-            fontSize: 16.0
-        );
+            fontSize: 16.0);
 
         break;
     }
