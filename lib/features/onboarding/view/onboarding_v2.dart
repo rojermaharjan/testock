@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:testockmbl/features/onboarding/view/getting_started_bg.dart';
 import 'package:testockmbl/features/registration/view/registration_screen.dart';
 
@@ -80,11 +81,14 @@ class OnBoardingV2State extends State<OnBoardingV2>
 
   List<Widget> getOnBoardingRelatedScreens() {
     return <Widget>[
+
+
       Container(
+          decoration: blackRadialDecoration,
           height: double.infinity,
           width: double.infinity,
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.fromLTRB(20.0,40,20,20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -118,8 +122,62 @@ class OnBoardingV2State extends State<OnBoardingV2>
               ],
             ),
           )),
+      FlareActor(
+          "assets/animation/star_bg.flr",
+          alignment: Alignment.topCenter,
+          animation: "stars"
+      ),
+
       GettingStartedContainer(_onBoardingToRegistrationSceneController,
           MediaQuery.of(context).size.height,ANIMATION_STATUS.INITIAL),
+
+//      Container(
+//        height: double.infinity,
+//        width: double.infinity,
+//        child: Rive  (
+//          filename: "assets/animation/glowing_sun.flr",
+//          animation: "Sun_idle",
+//        ),
+//      ),
+
     ];
   }
 }
+
+//const blackRadialDecoration = BoxDecoration(
+//  gradient: RadialGradient(
+//    radius: 1,
+//    center: Alignment.topRight,
+//    colors: [
+////      Color.fromRGBO(55, 81, 126, 1),
+////      Color.fromRGBO(232, 148, 173, 1),
+//
+////      Color.fromRGBO(242, 204, 143, 1),
+////      Color.fromRGBO(244, 172, 183, 1),
+//      Colors.black,
+//      Color.fromRGBO( 26, 26, 26,.6),
+//
+//
+//    ],
+//
+//  ),
+//);
+
+const blackRadialDecoration = BoxDecoration(
+  gradient: LinearGradient(
+    colors: [
+//      Color.fromRGBO(55, 81, 126, 1),
+//      Color.fromRGBO(232, 148, 173, 1),
+
+//      Color.fromRGBO(242, 204, 143, 1),
+//      Color.fromRGBO(244, 172, 183, 1),
+
+      Colors.black,
+      Colors.transparent,
+//      Color.fromRGBO( 26, 26, 26,.6),
+    ],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  ),
+);
+

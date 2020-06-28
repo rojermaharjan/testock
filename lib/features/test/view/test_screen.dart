@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:testockmbl/common/widget/animated_outline_button.dart';
 import 'package:testockmbl/common/widget/animated_typed_text.dart';
+import 'package:testockmbl/common/widget/curve_slice_bg.dart';
 import 'package:testockmbl/features/test/model/question_models.dart';
 import 'package:testockmbl/features/test/presenter/test_screen_presenter.dart';
 import 'package:testockmbl/features/test/view/test_summary_screen.dart';
@@ -65,7 +66,16 @@ class _TestScreenState extends State<StatefulWidget>
         width: double.infinity,
         decoration: backgroundDecoration,
         child:Stack(
-          children: <Widget>[selectedWidget],
+          children: <Widget>[
+            Container(
+              height: double.infinity,
+              width: double.infinity,
+              child: CustomPaint(
+                painter: CurveSliceBg(),
+              ),
+            ),
+            selectedWidget,
+          ],
         ) ,
       ),
     );

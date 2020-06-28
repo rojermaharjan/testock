@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:testockmbl/features/onboarding/view/onboarding.dart';
 import 'package:testockmbl/features/onboarding/view/onboarding_v2.dart';
-import 'package:testockmbl/features/registration/view/registration_screen.dart';
-import 'package:testockmbl/features/splash/splash_screen.dart';
 import 'package:testockmbl/features/test/view/test_screen.dart';
 
 // void main() => runApp(MyApp());
@@ -43,8 +39,8 @@ class MyApp extends StatelessWidget {
             height: double.infinity,
             width: double.infinity,
             decoration: backgroundDecoration,
-//            child:  Stack(children:[OnBoarding()])
-            child:  getDefaultScreen(),
+            child:  Stack(children:[TestScreen()])
+//            child:  getDefaultScreen(),
         ),
       )
 
@@ -90,7 +86,10 @@ const backgroundDecoration = BoxDecoration(
 //      Color.fromRGBO(242, 204, 143, 1),
 //      Color.fromRGBO(244, 172, 183, 1),
 
-      Color.fromRGBO(49, 104, 96,1),
+//      Color.fromRGBO(49, 104, 96,1),
+//      Color.fromRGBO(113, 164, 160, 1),
+
+      Color.fromRGBO(55, 81, 126,1),
       Color.fromRGBO(113, 164, 160, 1),
     ],
     begin: Alignment.topCenter,

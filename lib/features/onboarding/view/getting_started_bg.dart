@@ -121,6 +121,7 @@ class GettingStartedContainerState extends State<GettingStartedContainer>
   @override
   void dispose() {
     _expandAnimationController.dispose();
+    super.dispose();
   }
 }
 
